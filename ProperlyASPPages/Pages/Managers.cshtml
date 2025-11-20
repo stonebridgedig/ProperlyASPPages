@@ -1,65 +1,24 @@
 @page
 @model ProperlyASPPages.Pages.ManagersModel
 @{
-    ViewData["Title"] = "Property Manager Dashboard";
-    Layout = null;
+    ViewData["Title"] = "Managers";
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ProperlyASPPages</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-        iframe {
-            border: none;
-            width: 100%;
-            height: 100vh;
-        }
-        .error-message {
-            padding: 2rem;
-            text-align: center;
-            font-family: system-ui, -apple-system, sans-serif;
-        }
-        .error-message h2 {
-            color: #dc2626;
-            margin-bottom: 1rem;
-        }
-        .error-message pre {
-            background: #f3f4f6;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            text-align: left;
-            display: inline-block;
-        }
-    </style>
-</head>
-<body>
-<iframe src="https://localhost:3000/#/manager" title="Property Manager Dashboard" onerror="showError()"></iframe>
-    <script>
-        function showError() {
-            document.body.innerHTML = `
-                <div class="error-message">
-                    <h2>Frontend Development Server Not Running</h2>
-                    <p>Please start the React frontend development server:</p>
-                    <pre>cd ProperlyASPPages/wwwroot/frontend\nnpm run dev</pre>
-                    <p>Then refresh this page.</p>
+<div class="container">
+    <h1 class="display-4">Property Managers</h1>
+    <p class="lead">Manage property managers and their assigned properties.</p>
+    
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Manager Overview</h3>
                 </div>
-            `;
-        }
-        
-        window.addEventListener('message', function(event) {
-            if (event.data === 'iframe-error') {
-                showError();
-            }
-        });
-    </script>
-</body>
-</html>
+                <div class="card-body">
+                    <p>View and manage property managers who oversee day-to-day operations.</p>
+                    <button class="btn btn-primary">Add New Manager</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
