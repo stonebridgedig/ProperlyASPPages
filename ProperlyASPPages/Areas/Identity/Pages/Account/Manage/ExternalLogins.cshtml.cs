@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Properly.API.Models;
+using Properly.Models;
 
 namespace ProperlyASPPages.Areas.Identity.Pages.Account.Manage
 {

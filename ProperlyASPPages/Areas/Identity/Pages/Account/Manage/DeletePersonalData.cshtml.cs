@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Properly.API.Models;
+using Properly.Models;
 
 namespace ProperlyASPPages.Areas.Identity.Pages.Account.Manage
 {

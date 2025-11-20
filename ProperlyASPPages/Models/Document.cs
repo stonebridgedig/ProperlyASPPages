@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Properly.API.Models;
+namespace Properly.Models;
 
 public class Document
 {

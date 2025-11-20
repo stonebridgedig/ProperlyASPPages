@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace Properly.API.Models;
+namespace Properly.Models;
 
 public class ApplicationUser : IdentityUser
 {
@@ -12,6 +12,7 @@ public class ApplicationUser : IdentityUser
     public bool IsActive { get; set; } = true;
 
     // Navigation properties
+    /*
     public ICollection<Property> ManagedProperties { get; set; } = new List<Property>();
     public ICollection<Property> OwnedProperties { get; set; } = new List<Property>();
     public ICollection<Lease> Leases { get; set; } = new List<Lease>();
@@ -19,4 +20,5 @@ public class ApplicationUser : IdentityUser
     public ICollection<Message> SentMessages { get; set; } = new List<Message>();
     public ICollection<Message> ReceivedMessages { get; set; } = new List<Message>();
     public ICollection<Payment> Payments { get; set; } = new List<Payment>();
+    */
 }
