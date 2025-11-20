@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ProperlyASPPages.Data;
+using Properly.API.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("IdentityDB") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("ProperlyIdentityDB") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ProperlyIdentityDbContext>(options =>
     options.UseSqlServer(connectionString, sqlOptions => 
     {
@@ -13,7 +14,7 @@ builder.Services.AddDbContext<ProperlyIdentityDbContext>(options =>
     }));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ProperlyIdentityDbContext>();
 builder.Services.AddRazorPages();
 
