@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ProperlyASPPages.Data
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext(options)
+    public class ProperlyIdentityDbContext(DbContextOptions<ProperlyIdentityDbContext> options) : IdentityDbContext(options)
     {
     }
 }
