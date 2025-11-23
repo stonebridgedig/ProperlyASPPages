@@ -1,0 +1,146 @@
+# IIS Server Deployment Setup Guide
+
+## Prerequisites on IIS Server (10.0.0.102)
+
+### 1. Install Web Deploy 3.6 or later
+Download and install from: https://www.iis.net/downloads/microsoft/web-deploy
+- Install with default settings
+- Ensure "IIS Deployment Handler" is selected during installation
+
+### 2. Install .NET 10 Hosting Bundle
+Download from: https://dotnet.microsoft.com/download/dotnet/10.0
+- Install the "Hosting Bundle" (not just the runtime)
+- Restart IIS after installation: `iisreset`
+
+### 3. Configure Web Management Service
+Open IIS Manager on the server:
+1. Click on the server name (root level)
+2. Double-click "Management Service"
+3. Check "Enable remote connections"
+4. Set Identity Credentials to "Windows credentials or IIS Manager credentials"
+5. Click "Apply" and start the service
+6. Ensure port 8172 is open in Windows Firewall
+
+### 4. Create IIS Application
+1. Open IIS Manager
+2. Right-click "Default Web Site" ? "Add Application"
+3. Alias: `ProperlyASPPages`
+4. Physical path: `C:\inetpub\wwwroot\ProperlyASPPages`
+5. Create the directory if it doesn't exist
+6. Ensure "DefaultAppPool" is set to "No Managed Code"
+
+### 5. Configure Permissions
+Grant the IIS application pool identity permissions to the application folder:
+```powershell
+icacls "C:\inetpub\wwwroot\ProperlyASPPages" /grant "IIS AppPool\DefaultAppPool:(OI)(CI)F" /T
+```
+
+### 6. Configure Windows Firewall
+Allow Web Deploy port (8172):
+```powershell
+New-NetFirewallRule -DisplayName "Web Deploy" -Direction Inbound -LocalPort 8172 -Protocol TCP -Action Allow
+```
+
+## Deployment from Development Machine
+
+### Option 1: Using PowerShell Script (Recommended)
+```powershell
+# Navigate to your project root
+cd C:\Dev\Alek\ProperlyASPPages
+
+# Run the deployment script
+.\Deploy-ToIIS.ps1 -PromptForPassword
+```
+
+### Option 2: Using Visual Studio
+1. Right-click the ProperlyASPPages project
+2. Select "Publish..."
+3. Select the "IIS-Local" profile
+4. Click "Publish"
+5. Enter credentials when prompted
+
+### Option 3: Using dotnet CLI
+```powershell
+dotnet publish ProperlyASPPages\ProperlyASPPages.csproj `
+  /p:DeployOnBuild=true `
+  /p:PublishProfile=IIS-Local `
+  /p:Configuration=Release `
+  /p:Username=Administrator `
+  /p:Password=YourPassword
+```
+
+## Automated Deployment Options
+
+### GitHub Actions (If using GitHub)
+Add this to `.github/workflows/deploy-iis.yml`:
+```yaml
+name: Deploy to IIS
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '10.0.x'
+    - name: Publish
+      run: |
+        dotnet publish ProperlyASPPages/ProperlyASPPages.csproj `
+          /p:DeployOnBuild=true `
+          /p:PublishProfile=IIS-Local `
+          /p:Configuration=Release `
+          /p:Username=${{ secrets.IIS_USERNAME }} `
+          /p:Password=${{ secrets.IIS_PASSWORD }}
+```
+
+### Scheduled Task (Windows Task Scheduler)
+Create a scheduled task that runs `Deploy-ToIIS.ps1` on a schedule or trigger.
+
+### File Watcher
+Use a file system watcher to trigger deployment on code changes.
+
+## Troubleshooting
+
+### Connection Issues
+- Verify Web Management Service is running on server
+- Check firewall allows port 8172
+- Test connection: `Test-NetConnection -ComputerName 10.0.0.102 -Port 8172`
+
+### Authentication Issues
+- Ensure credentials have admin rights on IIS server
+- Try using domain credentials if in domain environment
+- For non-domain: Create IIS Manager user in IIS
+
+### Deployment Failures
+- Check IIS logs: `C:\inetpub\logs\LogFiles`
+- Check Application Event Viewer on server
+- Ensure .NET 10 Hosting Bundle is installed
+- Verify application pool is running
+
+## Configuration Updates
+
+### Change Site Name
+Edit `ProperlyASPPages/Properties/PublishProfiles/IIS-Local.pubxml`:
+- Update `<DeployIisAppPath>` to your site name
+
+### Change Server IP
+Edit the publish profile or pass parameters to the script:
+```powershell
+.\Deploy-ToIIS.ps1 -ServerIP "10.0.0.XXX" -PromptForPassword
+```
+
+### Store Credentials (Use with caution)
+Edit publish profile and set `<_SavePWD>True</_SavePWD>`, then publish once through Visual Studio to save credentials.
+
+## Security Recommendations
+- Use a dedicated deployment account with minimal permissions
+- Consider using Windows Authentication in domain environments
+- Restrict Web Deploy access to specific IP addresses
+- Enable SSL/TLS for Web Deploy (port 8172)
+- Regularly update Web Deploy and .NET runtime

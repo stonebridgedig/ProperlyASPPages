@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Properly.Models;
+using ProperlyASPPages.Services;
 
 namespace ProperlyASPPages.Areas.Identity.Pages.Account
 {
@@ -22,11 +23,13 @@ namespace ProperlyASPPages.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly IOnboardingService _onboardingService;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger, IOnboardingService onboardingService)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _onboardingService = onboardingService;
         }
 
         /// <summary>
@@ -116,6 +119,17 @@ namespace ProperlyASPPages.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+
+                    var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+                    if (user != null)
+                    {
+                        var hasCompletedOnboarding = await _onboardingService.HasCompletedOnboardingAsync(user.Id);
+                        if (!hasCompletedOnboarding)
+                        {
+                            return RedirectToPage("/Onboarding/CompanySetup", new { returnUrl = returnUrl });
+                        }
+                    }
+
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

@@ -1,0 +1,160 @@
+@page
+@model ProperlyASPPages.Pages.Admin.Admins.IndexModel
+@{
+    ViewData["Title"] = "Manage System Administrators";
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2">System Administrators</h1>
+            <p class="text-muted">Manage system administrator accounts and permissions</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-page="/Admin/Admins/Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add New Admin
+            </a>
+            <a asp-page="/Admin/Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @Model.SuccessMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @Model.ErrorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Last Access</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var admin in Model.Admins)
+                        {
+                            <tr class="@(admin.IsActive ? "" : "table-secondary")">
+                                <td>
+                                    <strong>@admin.FullName</strong>
+                                    @if (admin.IsSuperAdmin)
+                                    {
+                                        <span class="badge bg-danger ms-2">Super Admin</span>
+                                    }
+                                </td>
+                                <td>@admin.Email</td>
+                                <td>
+                                    <span class="badge bg-primary">@admin.Role.RoleName</span>
+                                </td>
+                                <td>@(admin.Department ?? "-")</td>
+                                <td>
+                                    @if (admin.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    }
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        @(admin.LastAccessAt.HasValue ? admin.LastAccessAt.Value.ToLocalTime().ToString("MM/dd/yyyy HH:mm") : "Never")
+                                    </small>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-page="/Admin/Admins/Details" asp-route-id="@admin.SystemAdminId" 
+                                           class="btn btn-sm btn-outline-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-page="/Admin/Admins/Edit" asp-route-id="@admin.SystemAdminId" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        @if (admin.IsActive)
+                                        {
+                                            <form method="post" asp-page-handler="Deactivate" asp-route-adminId="@admin.SystemAdminId" 
+                                                  onsubmit="return confirm('Are you sure you want to deactivate this admin?');" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-x-circle"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Roles Summary -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Admin Roles</h5>
+                    <a asp-page="/Admin/Admins/Roles" class="btn btn-sm btn-outline-primary">Manage Roles</a>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @foreach (var role in Model.Roles)
+                        {
+                            var adminCount = Model.Admins.Count(a => a.RoleId == role.RoleId && a.IsActive);
+                            <div class="col-md-4 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">@role.RoleName</h6>
+                                        <p class="card-text">
+                                            <small class="text-muted">@role.Description</small>
+                                        </p>
+                                        <p class="mb-0">
+                                            <strong>@adminCount</strong> active admin(s)
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+    </style>
+}

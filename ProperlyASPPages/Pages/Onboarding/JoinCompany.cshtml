@@ -1,0 +1,52 @@
+@page
+@model ProperlyASPPages.Pages.Onboarding.JoinCompanyModel
+@{
+    ViewData["Title"] = "Join a Company";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">@ViewData["Title"]</h2>
+                </div>
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-envelope-heart" style="font-size: 5rem; color: #0d6efd;"></i>
+                    
+                    <h3 class="mt-4 mb-3">Invitation Required</h3>
+                    
+                    <p class="lead text-muted mb-4">
+                        To join an existing company, you need to receive an invitation from a company administrator.
+                    </p>
+
+                    <div class="alert alert-info text-start">
+                        <h5 class="alert-heading"><i class="bi bi-info-circle"></i> How to join a company:</h5>
+                        <ol class="mb-0">
+                            <li>Contact a company administrator</li>
+                            <li>Request an invitation to be sent to your email address</li>
+                            <li>Check your email for the invitation link</li>
+                            <li>Click the link to accept the invitation</li>
+                        </ol>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <h5 class="mb-3">Don't have an invitation?</h5>
+                    <p class="text-muted">
+                        If you're looking to set up your own property management company, you can create a new company instead.
+                    </p>
+
+                    <div class="d-grid gap-2 col-md-6 mx-auto mt-4">
+                        <a asp-page="/Onboarding/CompanySetup" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-success btn-lg">
+                            <i class="bi bi-building"></i> Create New Company
+                        </a>
+                        <a href="~/" class="btn btn-outline-secondary">
+                            <i class="bi bi-house"></i> Go to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

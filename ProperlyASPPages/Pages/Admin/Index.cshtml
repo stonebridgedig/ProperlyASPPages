@@ -1,0 +1,203 @@
+@page
+@model ProperlyASPPages.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "System Administration";
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2">System Administration Dashboard</h1>
+            <p class="text-muted">Welcome, @Model.CurrentAdmin.FullName (@Model.CurrentAdmin.Role.RoleName)</p>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Companies</h5>
+                    <h2 class="mb-0">@Model.Stats.ActiveCompanies / @Model.Stats.TotalCompanies</h2>
+                    <small>Active / Total</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">System Admins</h5>
+                    <h2 class="mb-0">@Model.Stats.ActiveAdmins / @Model.Stats.TotalAdmins</h2>
+                    <small>Active / Total</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Users</h5>
+                    <h2 class="mb-0">@Model.Stats.ActiveUsers / @Model.Stats.TotalUsers</h2>
+                    <small>Active / Total</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body">
+                    <h5 class="card-title">Support Tickets</h5>
+                    <h2 class="mb-0">0</h2>
+                    <small>Open Tickets</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @if (Model.CurrentAdmin.Role.CanManageAdmins || Model.CurrentAdmin.IsSuperAdmin)
+                        {
+                            <div class="col-md-3 mb-3">
+                                <a asp-page="/Admin/Admins/Index" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-shield-lock"></i> Manage Admins
+                                </a>
+                            </div>
+                        }
+                        @if (Model.CurrentAdmin.Role.CanManageUsers || Model.CurrentAdmin.IsSuperAdmin)
+                        {
+                            <div class="col-md-3 mb-3">
+                                <a asp-page="/Admin/Users/Index" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-people"></i> Manage Users
+                                </a>
+                            </div>
+                        }
+                        @if (Model.CurrentAdmin.Role.CanManageCompanies || Model.CurrentAdmin.IsSuperAdmin)
+                        {
+                            <div class="col-md-3 mb-3">
+                                <a asp-page="/Admin/Companies/Index" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-building"></i> Manage Companies
+                                </a>
+                            </div>
+                        }
+                        @if (Model.CurrentAdmin.Role.CanViewReports || Model.CurrentAdmin.IsSuperAdmin)
+                        {
+                            <div class="col-md-3 mb-3">
+                                <a asp-page="/Admin/Reports/Index" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-graph-up"></i> Reports
+                                </a>
+                            </div>
+                        }
+                        @if (Model.CurrentAdmin.Role.CanAccessBilling || Model.CurrentAdmin.IsSuperAdmin)
+                        {
+                            <div class="col-md-3 mb-3">
+                                <a asp-page="/Admin/Billing/Index" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-credit-card"></i> Billing
+                                </a>
+                            </div>
+                        }
+                        @if (Model.CurrentAdmin.Role.CanManageSupport || Model.CurrentAdmin.IsSuperAdmin)
+                        {
+                            <div class="col-md-3 mb-3">
+                                <a asp-page="/Admin/Support/Index" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-headset"></i> Support
+                                </a>
+                            </div>
+                        }
+                        @if (Model.CurrentAdmin.Role.CanManageSystem || Model.CurrentAdmin.IsSuperAdmin)
+                        {
+                            <div class="col-md-3 mb-3">
+                                <a asp-page="/Admin/System/Index" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-gear"></i> System Settings
+                                </a>
+                            </div>
+                        }
+                        <div class="col-md-3 mb-3">
+                            <a asp-page="/Admin/Activity" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-activity"></i> Activity Log
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent System Activity</h5>
+                    <a asp-page="/Admin/Activity" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentActivity.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Admin</th>
+                                        <th>Activity</th>
+                                        <th>Description</th>
+                                        <th>IP Address</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var log in Model.RecentActivity)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <small>@log.Timestamp.ToLocalTime().ToString("MM/dd/yyyy HH:mm")</small>
+                                            </td>
+                                            <td>Admin #@log.SystemAdminId</td>
+                                            <td>
+                                                <span class="badge bg-info">@log.Activity</span>
+                                            </td>
+                                            <td>
+                                                <small>@(log.Description ?? "-")</small>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">@(log.IpAddress ?? "-")</small>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No recent activity</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+            margin-bottom: 1rem;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .btn-outline-primary:hover {
+            transform: translateY(-2px);
+            transition: all 0.2s;
+        }
+    </style>
+}

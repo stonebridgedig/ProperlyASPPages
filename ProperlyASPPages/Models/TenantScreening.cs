@@ -11,7 +11,7 @@ public class TenantScreening
     public ApplicationUser Tenant { get; set; } = null!;
 
     public int? UnitId { get; set; }
-    public Unit? Unit { get; set; }
+    //public Unit? Unit { get; set; }
 
     public ScreeningStatus OverallStatus { get; set; } = ScreeningStatus.NotStarted;
 

@@ -1,6 +1,17 @@
+using System;
 using Microsoft.AspNetCore.Identity;
 
 namespace Properly.Models;
+
+[Flags]
+public enum DomainUserType
+{
+    None = 0,
+    Company = 1,
+    Owner = 2,
+    Tenant = 4,
+    Service = 8
+}
 
 public class ApplicationUser : IdentityUser
 {
@@ -11,14 +22,16 @@ public class ApplicationUser : IdentityUser
     public DateTime? LastLoginAt { get; set; }
     public bool IsActive { get; set; } = true;
 
-    // Navigation properties
-    /*
-    public ICollection<Property> ManagedProperties { get; set; } = new List<Property>();
-    public ICollection<Property> OwnedProperties { get; set; } = new List<Property>();
-    public ICollection<Lease> Leases { get; set; } = new List<Lease>();
-    public ICollection<MaintenanceRequest> MaintenanceRequests { get; set; } = new List<MaintenanceRequest>();
-    public ICollection<Message> SentMessages { get; set; } = new List<Message>();
-    public ICollection<Message> ReceivedMessages { get; set; } = new List<Message>();
-    public ICollection<Payment> Payments { get; set; } = new List<Payment>();
-    */
+    // Cached domain membership flags
+    public DomainUserType DomainTypes { get; set; } = DomainUserType.None;
+
+    // Last used contextual entity IDs (nullable => never used)
+    public int? LastCompanyUserId { get; set; }
+    public int? LastOwnerUserId { get; set; }
+    public int? LastTenantId { get; set; }
+    public int? LastServiceUserId { get; set; }
+
+    public DateTime? LastDomainContextSwitchUtc { get; set; }
+
+
 }

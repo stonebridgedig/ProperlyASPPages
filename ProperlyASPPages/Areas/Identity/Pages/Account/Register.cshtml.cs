@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Properly.Models;
+using ProperlyASPPages.Services;
 
 namespace ProperlyASPPages.Areas.Identity.Pages.Account
 {
@@ -30,13 +31,15 @@ namespace ProperlyASPPages.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IOnboardingService _onboardingService;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IOnboardingService onboardingService)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -44,6 +47,7 @@ namespace ProperlyASPPages.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _onboardingService = onboardingService;
         }
 
         /// <summary>
@@ -142,6 +146,13 @@ namespace ProperlyASPPages.Areas.Identity.Pages.Account
                     else
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
+                        
+                        var hasCompletedOnboarding = await _onboardingService.HasCompletedOnboardingAsync(userId);
+                        if (!hasCompletedOnboarding)
+                        {
+                            return RedirectToPage("/Onboarding/CompanySetup", new { returnUrl = returnUrl });
+                        }
+                        
                         return LocalRedirect(returnUrl);
                     }
                 }

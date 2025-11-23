@@ -1,0 +1,131 @@
+@page
+@model ProperlyASPPages.Pages.Onboarding.CompanySetupModel
+@{
+    ViewData["Title"] = "Company Setup";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">@ViewData["Title"]</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">
+                        Welcome! Let's set up your company profile to get started with property management.
+                    </p>
+
+                    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+                    {
+                        <div class="alert alert-info">@Model.StatusMessage</div>
+                    }
+
+                    <form method="post">
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                        <h4 class="mb-3">Company Information</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Input.CompanyName" class="form-label"></label>
+                                <input asp-for="Input.CompanyName" class="form-control" />
+                                <span asp-validation-for="Input.CompanyName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Input.LegalName" class="form-label"></label>
+                                <input asp-for="Input.LegalName" class="form-control" />
+                                <span asp-validation-for="Input.LegalName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Input.Email" class="form-label"></label>
+                                <input asp-for="Input.Email" class="form-control" />
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Input.Phone" class="form-label"></label>
+                                <input asp-for="Input.Phone" class="form-control" />
+                                <span asp-validation-for="Input.Phone" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Input.TaxId" class="form-label"></label>
+                                <input asp-for="Input.TaxId" class="form-control" />
+                                <span asp-validation-for="Input.TaxId" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Input.Website" class="form-label"></label>
+                                <input asp-for="Input.Website" class="form-control" />
+                                <span asp-validation-for="Input.Website" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Input.Address" class="form-label"></label>
+                            <input asp-for="Input.Address" class="form-control" />
+                            <span asp-validation-for="Input.Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Input.City" class="form-label"></label>
+                                <input asp-for="Input.City" class="form-control" />
+                                <span asp-validation-for="Input.City" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Input.State" class="form-label"></label>
+                                <input asp-for="Input.State" class="form-control" />
+                                <span asp-validation-for="Input.State" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Input.PostalCode" class="form-label"></label>
+                                <input asp-for="Input.PostalCode" class="form-control" />
+                                <span asp-validation-for="Input.PostalCode" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Input.Country" class="form-label"></label>
+                            <input asp-for="Input.Country" class="form-control" />
+                            <span asp-validation-for="Input.Country" class="text-danger"></span>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <h4 class="mb-3">Your Information</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Input.UserFullName" class="form-label"></label>
+                                <input asp-for="Input.UserFullName" class="form-control" />
+                                <span asp-validation-for="Input.UserFullName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Input.UserTitle" class="form-label"></label>
+                                <input asp-for="Input.UserTitle" class="form-control" />
+                                <span asp-validation-for="Input.UserTitle" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Input.UserPhone" class="form-label"></label>
+                            <input asp-for="Input.UserPhone" class="form-control" />
+                            <span asp-validation-for="Input.UserPhone" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg px-4">Complete Setup</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

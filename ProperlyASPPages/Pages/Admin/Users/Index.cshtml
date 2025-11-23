@@ -1,0 +1,111 @@
+@page
+@model ProperlyASPPages.Pages.Admin.Users.IndexModel
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2">Manage Users</h1>
+            <p class="text-muted">View and manage all application users</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-page="/Admin/Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Domain Types</th>
+                            <th>Created</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model.Users)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@($"{user.FirstName} {user.LastName}".Trim())</strong>
+                                </td>
+                                <td>@user.Email</td>
+                                <td>
+                                    @if (user.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (user.DomainTypes.HasFlag(Properly.Models.DomainUserType.Company))
+                                    {
+                                        <span class="badge bg-primary">Company</span>
+                                    }
+                                    @if (user.DomainTypes.HasFlag(Properly.Models.DomainUserType.Owner))
+                                    {
+                                        <span class="badge bg-info">Owner</span>
+                                    }
+                                    @if (user.DomainTypes.HasFlag(Properly.Models.DomainUserType.Tenant))
+                                    {
+                                        <span class="badge bg-warning">Tenant</span>
+                                    }
+                                    @if (user.DomainTypes.HasFlag(Properly.Models.DomainUserType.Service))
+                                    {
+                                        <span class="badge bg-secondary">Service</span>
+                                    }
+                                </td>
+                                <td>
+                                    <small>@user.CreatedAt.ToLocalTime().ToString("MM/dd/yyyy")</small>
+                                </td>
+                                <td>
+                                    <small>@(user.LastLoginAt?.ToLocalTime().ToString("MM/dd/yyyy HH:mm") ?? "Never")</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="#" class="btn btn-sm btn-outline-info" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-sm btn-outline-primary" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (!Model.Users.Any())
+            {
+                <div class="text-center py-5">
+                    <p class="text-muted">No users found</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+        }
+    </style>
+}
