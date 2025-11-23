@@ -31,11 +31,13 @@ public class IndexModel : PageModel
             return RedirectToPage("/Account/Login", new { area = "Identity" });
         }
 
-        CurrentAdmin = await _adminRepository.GetByIdentityUserIdAsync(userId);
-        if (CurrentAdmin == null)
+        var admin = await _adminRepository.GetByIdentityUserIdAsync(userId);
+        if (admin == null)
         {
             return Forbid();
         }
+
+        CurrentAdmin = admin;
 
         await _adminRepository.UpdateAsync(new SystemAdmin
         {

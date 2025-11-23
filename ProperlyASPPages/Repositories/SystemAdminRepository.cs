@@ -143,7 +143,8 @@ public class SystemAdminRepository : ISystemAdminRepository
         command.Parameters.AddWithValue("@CreatedAt", admin.CreatedAt);
         command.Parameters.AddWithValue("@CreatedByAdminId", (object?)admin.CreatedByAdminId ?? DBNull.Value);
 
-        admin.SystemAdminId = (int)await command.ExecuteScalarAsync();
+        var result = await command.ExecuteScalarAsync();
+        admin.SystemAdminId = result != null ? (int)result : 0;
         return admin;
     }
 
@@ -214,7 +215,8 @@ public class SystemAdminRepository : ISystemAdminRepository
         using var command = new SqlCommand(query, connection);
         command.Parameters.AddWithValue("@IdentityUserId", identityUserId);
 
-        var count = (int)await command.ExecuteScalarAsync();
+        var result = await command.ExecuteScalarAsync();
+        var count = result != null ? (int)result : 0;
         return count > 0;
     }
 
@@ -303,7 +305,8 @@ public class SystemAdminRepository : ISystemAdminRepository
         command.Parameters.AddWithValue("@IsActive", role.IsActive);
         command.Parameters.AddWithValue("@CreatedAt", role.CreatedAt);
 
-        role.RoleId = (int)await command.ExecuteScalarAsync();
+        var result = await command.ExecuteScalarAsync();
+        role.RoleId = result != null ? (int)result : 0;
         return role;
     }
 
@@ -432,17 +435,17 @@ public class SystemAdminRepository : ISystemAdminRepository
             FirstName = reader.GetString("FirstName"),
             LastName = reader.GetString("LastName"),
             Email = reader.GetString("Email"),
-            Phone = reader.IsDBNull("Phone") ? null : reader.GetString("Phone"),
-            Department = reader.IsDBNull("Department") ? null : reader.GetString("Department"),
-            Title = reader.IsDBNull("Title") ? null : reader.GetString("Title"),
+            Phone = reader.IsDBNull(reader.GetOrdinal("Phone")) ? null : reader.GetString("Phone"),
+            Department = reader.IsDBNull(reader.GetOrdinal("Department")) ? null : reader.GetString("Department"),
+            Title = reader.IsDBNull(reader.GetOrdinal("Title")) ? null : reader.GetString("Title"),
             IsActive = reader.GetBoolean("IsActive"),
             IsSuperAdmin = reader.GetBoolean("IsSuperAdmin"),
-            HireDate = reader.IsDBNull("HireDate") ? null : reader.GetDateTime("HireDate"),
-            LastAccessAt = reader.IsDBNull("LastAccessAt") ? null : reader.GetDateTime("LastAccessAt"),
-            Notes = reader.IsDBNull("Notes") ? null : reader.GetString("Notes"),
+            HireDate = reader.IsDBNull(reader.GetOrdinal("HireDate")) ? null : reader.GetDateTime("HireDate"),
+            LastAccessAt = reader.IsDBNull(reader.GetOrdinal("LastAccessAt")) ? null : reader.GetDateTime("LastAccessAt"),
+            Notes = reader.IsDBNull(reader.GetOrdinal("Notes")) ? null : reader.GetString("Notes"),
             CreatedAt = reader.GetDateTime("CreatedAt"),
-            UpdatedAt = reader.IsDBNull("UpdatedAt") ? null : reader.GetDateTime("UpdatedAt"),
-            CreatedByAdminId = reader.IsDBNull("CreatedByAdminId") ? null : reader.GetInt32("CreatedByAdminId"),
+            UpdatedAt = reader.IsDBNull(reader.GetOrdinal("UpdatedAt")) ? null : reader.GetDateTime("UpdatedAt"),
+            CreatedByAdminId = reader.IsDBNull(reader.GetOrdinal("CreatedByAdminId")) ? null : reader.GetInt32("CreatedByAdminId"),
             Role = MapSystemAdminRole(reader)
         };
     }
@@ -453,7 +456,7 @@ public class SystemAdminRepository : ISystemAdminRepository
         {
             RoleId = reader.GetInt32("RoleId"),
             RoleName = reader.GetString("RoleName"),
-            Description = reader.IsDBNull("Description") ? null : reader.GetString("Description"),
+            Description = reader.IsDBNull(reader.GetOrdinal("Description")) ? null : reader.GetString("Description"),
             CanManageAdmins = reader.GetBoolean("CanManageAdmins"),
             CanManageUsers = reader.GetBoolean("CanManageUsers"),
             CanManageCompanies = reader.GetBoolean("CanManageCompanies"),
@@ -463,7 +466,7 @@ public class SystemAdminRepository : ISystemAdminRepository
             CanManageSupport = reader.GetBoolean("CanManageSupport"),
             IsActive = reader.GetBoolean("IsActive"),
             CreatedAt = reader.GetDateTime("CreatedAt"),
-            UpdatedAt = reader.IsDBNull("UpdatedAt") ? null : reader.GetDateTime("UpdatedAt")
+            UpdatedAt = reader.IsDBNull(reader.GetOrdinal("UpdatedAt")) ? null : reader.GetDateTime("UpdatedAt")
         };
     }
 
@@ -474,11 +477,11 @@ public class SystemAdminRepository : ISystemAdminRepository
             LogId = reader.GetInt32("LogId"),
             SystemAdminId = reader.GetInt32("SystemAdminId"),
             Activity = reader.GetString("Activity"),
-            Description = reader.IsDBNull("Description") ? null : reader.GetString("Description"),
-            EntityType = reader.IsDBNull("EntityType") ? null : reader.GetString("EntityType"),
-            EntityId = reader.IsDBNull("EntityId") ? null : reader.GetString("EntityId"),
-            IpAddress = reader.IsDBNull("IpAddress") ? null : reader.GetString("IpAddress"),
-            UserAgent = reader.IsDBNull("UserAgent") ? null : reader.GetString("UserAgent"),
+            Description = reader.IsDBNull(reader.GetOrdinal("Description")) ? null : reader.GetString("Description"),
+            EntityType = reader.IsDBNull(reader.GetOrdinal("EntityType")) ? null : reader.GetString("EntityType"),
+            EntityId = reader.IsDBNull(reader.GetOrdinal("EntityId")) ? null : reader.GetString("EntityId"),
+            IpAddress = reader.IsDBNull(reader.GetOrdinal("IpAddress")) ? null : reader.GetString("IpAddress"),
+            UserAgent = reader.IsDBNull(reader.GetOrdinal("UserAgent")) ? null : reader.GetString("UserAgent"),
             Timestamp = reader.GetDateTime("Timestamp")
         };
     }
