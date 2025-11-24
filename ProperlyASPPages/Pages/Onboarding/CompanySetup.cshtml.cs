@@ -89,10 +89,10 @@ public class CompanySetupModel : PageModel
         var hasCompletedOnboarding = await _onboardingService.HasCompletedOnboardingAsync(user.Id);
         if (hasCompletedOnboarding)
         {
-            return Redirect(returnUrl ?? "~/");
+            return Redirect(returnUrl ?? "~/Dashboard");
         }
 
-        ReturnUrl = returnUrl ?? "~/";
+        ReturnUrl = returnUrl ?? "~/Dashboard";
 
         Input = new InputModel
         {

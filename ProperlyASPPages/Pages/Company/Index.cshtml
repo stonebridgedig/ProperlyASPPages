@@ -1,0 +1,243 @@
+@page
+@model CompanyIndexModel
+@{
+    ViewData["Title"] = "Company Management";
+}
+
+<div class="container mt-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold mb-2">Company Management</h1>
+            <p class="text-muted">Manage your company settings, team members, and operations</p>
+        </div>
+    </div>
+
+    @if (Model.CurrentUser != null)
+    {
+        <!-- Company Overview Section -->
+        <div class="row mb-5">
+            <div class="col-lg-8 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-building me-2"></i>Company Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-2">Your Role</h6>
+                                <p class="fs-5 fw-bold">@Model.CurrentUser.Role</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-2">Title</h6>
+                                <p class="fs-5">@(string.IsNullOrEmpty(Model.CurrentUser.Title) ? "Not provided" : Model.CurrentUser.Title)</p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-2">Email</h6>
+                                <p class="fs-5">@(string.IsNullOrEmpty(Model.CurrentUser.Email) ? "Not provided" : Model.CurrentUser.Email)</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-2">Phone</h6>
+                                <p class="fs-5">@(string.IsNullOrEmpty(Model.CurrentUser.Phone) ? "Not provided" : Model.CurrentUser.Phone)</p>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="row">
+                            <div class="col">
+                                <a href="/Company/Settings" class="btn btn-outline-primary">
+                                    <i class="bi bi-gear me-2"></i>Edit Company Settings
+                                </a>
+                                <a href="/Company/Profile" class="btn btn-outline-secondary">
+                                    <i class="bi bi-person me-2"></i>Edit Profile
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-calendar-check fs-1 text-success mb-3 d-block"></i>
+                        <h3>@Model.PendingInvitations</h3>
+                        <p class="text-muted mb-0">Pending Invitations</p>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-building-check fs-1 text-info mb-3 d-block"></i>
+                        <h5 class="mb-3">Member Since</h5>
+                        <p class="mb-0">@(Model.CurrentUser.CreatedAt?.ToString("MMMM dd, yyyy") ?? "Recently added")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mb-5">
+            <div class="col">
+                <h3 class="mb-4">Quick Actions</h3>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm h-100 hover-lift">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-envelope-plus fs-1 text-success mb-3 d-block"></i>
+                        <h5 class="card-title mb-3">Invite Team Members</h5>
+                        <p class="card-text text-muted mb-4">Add new users to your company and manage their roles.</p>
+                        <a asp-page="/Company/InviteUser" class="btn btn-success">
+                            <i class="bi bi-plus-circle me-2"></i>Invite User
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm h-100 hover-lift">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-people-fill fs-1 text-primary mb-3 d-block"></i>
+                        <h5 class="card-title mb-3">Manage Team</h5>
+                        <p class="card-text text-muted mb-4">View team members, update roles, and manage permissions.</p>
+                        <a href="/Company/Team" class="btn btn-primary">
+                            <i class="bi bi-people me-2"></i>View Team
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm h-100 hover-lift">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-gear-fill fs-1 text-info mb-3 d-block"></i>
+                        <h5 class="card-title mb-3">Company Settings</h5>
+                        <p class="card-text text-muted mb-4">Configure company information and preferences.</p>
+                        <a href="/Company/Settings" class="btn btn-info">
+                            <i class="bi bi-gear me-2"></i>Settings
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm h-100 hover-lift">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-graph-up fs-1 text-warning mb-3 d-block"></i>
+                        <h5 class="card-title mb-3">Reports & Analytics</h5>
+                        <p class="card-text text-muted mb-4">View company performance metrics and analytics.</p>
+                        <a href="/Company/Reports" class="btn btn-warning">
+                            <i class="bi bi-bar-chart me-2"></i>Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm h-100 hover-lift">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-file-earmark-text fs-1 text-success mb-3 d-block"></i>
+                        <h5 class="card-title mb-3">Documents</h5>
+                        <p class="card-text text-muted mb-4">Store and manage company documents and files.</p>
+                        <a href="/Company/Documents" class="btn btn-success">
+                            <i class="bi bi-file-earmark me-2"></i>Documents
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm h-100 hover-lift">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-key fs-1 text-danger mb-3 d-block"></i>
+                        <h5 class="card-title mb-3">API & Integration</h5>
+                        <p class="card-text text-muted mb-4">Manage API keys and third-party integrations.</p>
+                        <a href="/Company/Integrations" class="btn btn-danger">
+                            <i class="bi bi-link me-2"></i>Integrations
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        @if (Model.RecentInvitations.Any())
+        {
+            <div class="row mb-5">
+                <div class="col">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Recent Invitations</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Sent Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var invitation in Model.RecentInvitations)
+                                        {
+                                            <tr>
+                                                <td>@invitation.Email</td>
+                                                <td><span class="badge bg-info">@invitation.Role</span></td>
+                                                <td>@invitation.CreatedAt?.ToString("MMM dd, yyyy")</td>
+                                                <td>
+                                                    @if (invitation.AcceptedAt.HasValue)
+                                                    {
+                                                        <span class="badge bg-success">Accepted</span>
+                                                    }
+                                                    else if (invitation.ExpiresAt < DateTime.UtcNow)
+                                                    {
+                                                        <span class="badge bg-danger">Expired</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-warning">Pending</span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading"><i class="bi bi-exclamation-triangle me-2"></i>Company Setup Required</h4>
+            <p>You haven't completed company setup yet. Please set up your company information to continue.</p>
+            <hr />
+            <a asp-page="/Onboarding/CompanySetup" class="btn btn-warning">Complete Company Setup</a>
+        </div>
+    }
+</div>
+
+<style>
+    .hover-lift {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+</style>
