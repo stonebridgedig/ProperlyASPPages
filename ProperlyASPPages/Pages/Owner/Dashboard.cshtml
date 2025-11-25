@@ -1,0 +1,51 @@
+@page
+@model Owner.DashboardModel
+@{
+    ViewData["Title"] = "Owner Dashboard";
+}
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="h2">Owner Dashboard</h1>
+        <p class="text-muted">Manage your properties and portfolio</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Welcome, @Model.CurrentUser.FirstName @Model.CurrentUser.LastName</h5>
+                <p class="card-text">
+                    You are logged in as an Owner. Manage your properties, finances, and view reports.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">My Properties</h5>
+            </div>
+            <div class="card-body">
+                <p>View and manage all your properties.</p>
+                <a asp-page="/Owners" class="btn btn-success btn-sm">View Properties</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Financial Reports</h5>
+            </div>
+            <div class="card-body">
+                <p>Review income, expenses, and financial summaries.</p>
+                <a href="#" class="btn btn-success btn-sm">View Reports</a>
+            </div>
+        </div>
+    </div>
+</div>

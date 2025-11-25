@@ -9,15 +9,21 @@
 
 ## Project-Specific Context
 
-This is a .NET 10 Razor Pages property management application with an integrated React frontend.
+This is a multi-tenant property management web application built on .NET 10 Razor Pages with an integrated React frontend.
 
 ### Technology Stack
 - **Backend**: ASP.NET Core Razor Pages (.NET 10)
 - **Frontend**: React 19.2.0 with TypeScript
 - **Styling**: Tailwind CSS
 - **Routing**: React Router (HashRouter)
-- **Database**: SQL Server with Entity Framework Core
-- **Authentication**: ASP.NET Core Identity
+- **Database**: SQL Server
+- **Authentication**: ASP.NET Core Identity with Entity Framework Core
+- **Data Access**: Dapper for business data, Entity Framework Core for user identity only
+
+### Architecture
+- **Multi-tenant**: Supports multiple property management organizations
+- **User Identity Management**: Entity Framework Core
+- **Business Data Access**: Dapper ORM for improved performance and flexibility
 
 ### Code Style Preferences
 - Follow existing coding conventions in the codebase
@@ -31,6 +37,7 @@ This is a .NET 10 Razor Pages property management application with an integrated
 - React Components: `ProperlyASPPages/wwwroot/frontend/`
 - Static Assets: `ProperlyASPPages/wwwroot/`
 - Data Context: `ProperlyASPPages/Data/`
+- Services: `ProperlyASPPages/Services/`
 
 ## What to Avoid
 - Creating README files

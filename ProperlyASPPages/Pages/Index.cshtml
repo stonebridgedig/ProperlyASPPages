@@ -1,5 +1,60 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Home - Properly";
 }
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold mb-3">Welcome to Properly</h1>
+                <p class="lead text-muted">A Property Management Website</p>
+            </div>
+
+            <div class="row g-4 mb-5">
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title">For Property Managers</h5>
+                            <p class="card-text">Manage multiple properties, track maintenance requests, and oversee tenant relationships all in one place.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title">For Property Owners</h5>
+                            <p class="card-text">Monitor your property portfolio, view financial reports, and stay informed about tenant and maintenance activities.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title">For Tenants</h5>
+                            <p class="card-text">Access your lease details, submit maintenance requests, and view payment history with ease.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title">For Service Providers</h5>
+                            <p class="card-text">Manage work orders, track completed maintenance, and schedule availability for property services.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <p class="text-muted mb-4">Sign in to access your dashboard and start managing properties efficiently.</p>
+                <a href="/Identity/Account/Login" class="btn btn-primary btn-lg">Sign In</a>
+                <a href="/Identity/Account/Register" class="btn btn-outline-primary btn-lg ms-2">Register</a>
+            </div>
+        </div>
+    </div>
+</div>

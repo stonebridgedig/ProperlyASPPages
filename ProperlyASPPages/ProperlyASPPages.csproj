@@ -22,4 +22,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\Api\" />
+    <Folder Include="src\pages\Company\" />
+  </ItemGroup>
+
 </Project>

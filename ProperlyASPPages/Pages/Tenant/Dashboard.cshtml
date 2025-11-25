@@ -1,0 +1,65 @@
+@page
+@model Tenant.DashboardModel
+@{
+    ViewData["Title"] = "Tenant Dashboard";
+}
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="h2">Tenant Dashboard</h1>
+        <p class="text-muted">Manage your lease and rental information</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Welcome, @Model.CurrentUser.FirstName @Model.CurrentUser.LastName</h5>
+                <p class="card-text">
+                    You are logged in as a Tenant. View your lease, submit maintenance requests, and pay rent.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">My Lease</h5>
+            </div>
+            <div class="card-body">
+                <p>View your lease details and rental information.</p>
+                <a asp-page="/Tenants" class="btn btn-info btn-sm">View Lease</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Maintenance Requests</h5>
+            </div>
+            <div class="card-body">
+                <p>Submit and track maintenance requests for your unit.</p>
+                <a href="#" class="btn btn-info btn-sm">View Requests</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Payments</h5>
+            </div>
+            <div class="card-body">
+                <p>View payment history and make rent payments.</p>
+                <a href="#" class="btn btn-info btn-sm">View Payments</a>
+            </div>
+        </div>
+    </div>
+</div>
