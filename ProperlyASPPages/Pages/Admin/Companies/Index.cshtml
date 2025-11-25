@@ -1,14 +1,14 @@
 @page
-@model ProperlyASPPages.Pages.Admin.Companies.IndexModel
+@model ProperlyASPPages.Pages.Admin.Management.IndexModel
 @{
-    ViewData["Title"] = "Manage Companies";
+    ViewData["Title"] = "Manage Management Organizations";
 }
 
 <div class="container-fluid py-4">
     <div class="row mb-4">
         <div class="col-md-12">
-            <h1 class="h2">Manage Companies</h1>
-            <p class="text-muted">View and manage all company organizations</p>
+            <h1 class="h2">Manage Management Organizations</h1>
+            <p class="text-muted">View and manage all management organizations</p>
         </div>
     </div>
 
@@ -18,7 +18,7 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>Company Name</th>
+                            <th>Organization Name</th>
                             <th>Legal Name</th>
                             <th>Email</th>
                             <th>Phone</th>
@@ -30,18 +30,18 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var company in Model.Companies)
+                        @foreach (var management in Model.ManagementOrgs)
                         {
-                            <tr class="@(company.IsActive ?? false ? "" : "table-secondary")">
-                                <td><strong>@company.Name</strong></td>
-                                <td>@(company.LegalName ?? "-")</td>
-                                <td>@(company.Email ?? "-")</td>
-                                <td>@(company.Phone ?? "-")</td>
+                            <tr class="@(management.IsActive ?? false ? "" : "table-secondary")">
+                                <td><strong>@management.Name</strong></td>
+                                <td>@(management.LegalName ?? "-")</td>
+                                <td>@(management.Email ?? "-")</td>
+                                <td>@(management.Phone ?? "-")</td>
                                 <td>
                                     <small>
-                                        @if (!string.IsNullOrEmpty(company.City) && !string.IsNullOrEmpty(company.State))
+                                        @if (!string.IsNullOrEmpty(management.City) && !string.IsNullOrEmpty(management.State))
                                         {
-                                            @($"{company.City}, {company.State}")
+                                            @($"{management.City}, {management.State}")
                                         }
                                         else
                                         {
@@ -50,15 +50,15 @@
                                     </small>
                                 </td>
                                 <td>
-                                    @if (company.CompanyOrgId.HasValue)
+                                    @if (management.ManagementOrgId.HasValue)
                                     {
                                         <span class="badge bg-primary">
-                                            @Model.CompanyUserCounts.GetValueOrDefault(company.CompanyOrgId.Value, 0) users
+                                            @Model.ManagementUserCounts.GetValueOrDefault(management.ManagementOrgId.Value, 0) users
                                         </span>
                                     }
                                 </td>
                                 <td>
-                                    @if (company.IsActive ?? false)
+                                    @if (management.IsActive ?? false)
                                     {
                                         <span class="badge bg-success">Active</span>
                                     }
@@ -68,7 +68,7 @@
                                     }
                                 </td>
                                 <td>
-                                    <small>@(company.CreatedAt?.ToLocalTime().ToString("MM/dd/yyyy") ?? "-")</small>
+                                    <small>@(management.CreatedAt?.ToLocalTime().ToString("MM/dd/yyyy") ?? "-")</small>
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
@@ -86,10 +86,10 @@
                 </table>
             </div>
 
-            @if (!Model.Companies.Any())
+            @if (!Model.ManagementOrgs.Any())
             {
                 <div class="text-center py-5">
-                    <p class="text-muted">No companies found</p>
+                    <p class="text-muted">No management organizations found</p>
                 </div>
             }
         </div>

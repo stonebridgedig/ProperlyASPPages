@@ -1,7 +1,7 @@
 @page
-@model ProperlyASPPages.Pages.Company.InviteUserModel
+@model ProperlyASPPages.Pages.Management.InviteUserModel
 @{
-    ViewData["Title"] = "Invite User to Company";
+    ViewData["Title"] = "Invite User to Management";
 }
 
 <div class="container mt-5">
@@ -21,7 +21,7 @@
                     }
 
                     <p class="text-muted mb-4">
-                        Send an invitation to allow a user to join your company. They will receive an email with a secure link.
+                        Send an invitation to allow a user to join your management organization. They will receive an email with a secure link.
                     </p>
 
                     <form method="post">
@@ -48,7 +48,7 @@
                                 <option value="Manager">Manager</option>
                             </select>
                             <span asp-validation-for="Input.Role" class="text-danger"></span>
-                            <small class="form-text text-muted">Administrators can invite other users and manage company settings.</small>
+                            <small class="form-text text-muted">Administrators can invite other users and manage organization settings.</small>
                         </div>
 
                         <div class="d-grid gap-2">

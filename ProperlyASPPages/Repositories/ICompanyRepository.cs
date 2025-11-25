@@ -2,24 +2,24 @@ using Properly.Models;
 
 namespace ProperlyASPPages.Repositories;
 
-public interface ICompanyRepository
+public interface IManagementRepository
 {
-    Task<int> CreateCompanyOrgAsync(CompanyOrg companyOrg);
-    Task<int> CreateCompanyUserAsync(CompanyUser companyUser);
-    Task<CompanyOrg?> GetCompanyOrgByIdAsync(int companyOrgId);
-    Task<CompanyUser?> GetCompanyUserByIdAsync(int companyUserId);
-    Task<CompanyUser?> GetCompanyUserByIdentityUserIdAsync(string identityUserId);
-    Task<List<CompanyUser>> GetCompanyUsersByIdentityUserIdAsync(string identityUserId);
-    Task<List<CompanyOrg>> GetAllCompaniesAsync();
-    Task<List<CompanyUser>> GetCompanyUsersAsync(int companyOrgId);
-    Task<List<CompanyOrg>> SearchCompanyOrgsByNameAsync(string searchTerm);
-    Task<bool> UpdateCompanyUserLastLoginAsync(int companyUserId, DateTime lastLoginAt);
+    Task<int> CreateManagementOrgAsync(ManagementOrg managementOrg);
+    Task<int> CreateManagementUserAsync(ManagementUser managementUser);
+    Task<ManagementOrg?> GetManagementOrgByIdAsync(int managementOrgId);
+    Task<ManagementUser?> GetManagementUserByIdAsync(int managementUserId);
+    Task<ManagementUser?> GetManagementUserByIdentityUserIdAsync(string identityUserId);
+    Task<List<ManagementUser>> GetManagementUsersByIdentityUserIdAsync(string identityUserId);
+    Task<List<ManagementOrg>> GetAllManagementOrgsAsync();
+    Task<List<ManagementUser>> GetManagementUsersAsync(int managementOrgId);
+    Task<List<ManagementOrg>> SearchManagementOrgsByNameAsync(string searchTerm);
+    Task<bool> UpdateManagementUserLastLoginAsync(int managementUserId, DateTime lastLoginAt);
     
-    Task<int> CreateInvitationAsync(CompanyInvitation invitation);
-    Task<CompanyInvitation?> GetInvitationByTokenAsync(string token);
-    Task<CompanyInvitation?> GetInvitationByIdAsync(int invitationId);
-    Task<List<CompanyInvitation>> GetPendingInvitationsByCompanyAsync(int companyOrgId);
+    Task<int> CreateInvitationAsync(ManagementInvitation invitation);
+    Task<ManagementInvitation?> GetInvitationByTokenAsync(string token);
+    Task<ManagementInvitation?> GetInvitationByIdAsync(int invitationId);
+    Task<List<ManagementInvitation>> GetPendingInvitationsByManagementAsync(int managementOrgId);
     Task<bool> UpdateInvitationStatusAsync(int invitationId, InvitationStatus status, string? acceptedByUserId = null);
-    Task<bool> IsUserAdminOfCompanyAsync(string identityUserId, int companyOrgId);
-    Task<CompanyInvitation?> GetPendingInvitationByEmailAndCompanyAsync(string email, int companyOrgId);
+    Task<bool> IsUserAdminOfManagementAsync(string identityUserId, int managementOrgId);
+    Task<ManagementInvitation?> GetPendingInvitationByEmailAndManagementAsync(string email, int managementOrgId);
 }

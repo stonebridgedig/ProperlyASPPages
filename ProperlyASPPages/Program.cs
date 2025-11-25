@@ -31,7 +31,7 @@ builder.Services.AddSession(options =>
 });
 
 // Repositories
-builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+builder.Services.AddScoped<IManagementRepository, ManagementRepository>();
 builder.Services.AddScoped<ISystemAdminRepository, SystemAdminRepository>();
 
 // Services

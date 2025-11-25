@@ -7,7 +7,7 @@ namespace Properly.Models;
 public enum DomainUserType
 {
     None = 0,
-    Company = 1,
+    Management = 1,
     Owner = 2,
     Tenant = 4,
     Service = 8
@@ -26,7 +26,7 @@ public class ApplicationUser : IdentityUser
     public DomainUserType DomainTypes { get; set; } = DomainUserType.None;
 
     // Last used contextual entity IDs (nullable => never used)
-    public int? LastCompanyUserId { get; set; }
+    public int? LastManagementUserId { get; set; }
     public int? LastOwnerUserId { get; set; }
     public int? LastTenantId { get; set; }
     public int? LastServiceUserId { get; set; }

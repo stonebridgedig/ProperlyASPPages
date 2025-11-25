@@ -125,13 +125,13 @@ namespace ProperlyASPPages.Areas.Identity.Pages.Account
                     {
                         // TODO: Development mode - assign all roles to user for testing
                         // Remove this block in production to use actual DomainTypes
-                        user.DomainTypes = DomainUserType.Company | DomainUserType.Owner | DomainUserType.Tenant | DomainUserType.Service;
+                        user.DomainTypes = DomainUserType.Management | DomainUserType.Owner | DomainUserType.Tenant | DomainUserType.Service;
                         await _signInManager.UserManager.UpdateAsync(user);
 
                         var hasCompletedOnboarding = await _onboardingService.HasCompletedOnboardingAsync(user.Id);
                         if (!hasCompletedOnboarding)
                         {
-                            return RedirectToPage("/Onboarding/CompanySetup", new { returnUrl = returnUrl });
+                            return RedirectToPage("/Onboarding/ManagementSetup", new { returnUrl = returnUrl });
                         }
                     }
 

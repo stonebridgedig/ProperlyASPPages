@@ -5,31 +5,34 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Properly.Models;
 using ProperlyASPPages.Services;
 
-namespace ProperlyASPPages.Pages.Company
+namespace ProperlyASPPages.Pages.Management
 {
     [Authorize]
-    public class Manager2Model : PageModel
+    public class DashboardModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IRoleContextService _roleContextService;
+        private readonly IOnboardingService _onboardingService;
 
-        public Manager2Model(UserManager<ApplicationUser> userManager, IRoleContextService roleContextService)
+        public DashboardModel(UserManager<ApplicationUser> userManager, IOnboardingService onboardingService)
         {
             _userManager = userManager;
-            _roleContextService = roleContextService;
+            _onboardingService = onboardingService;
         }
 
         public ApplicationUser CurrentUser { get; set; } = null!;
+        public ManagementUser ManagementUserInfo { get; set; } = null!;
 
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null || _roleContextService.GetCurrentRole() != DomainUserType.Company)
+            if (user == null || !user.DomainTypes.HasFlag(DomainUserType.Management))
             {
                 return RedirectToPage("/Dashboard");
             }
 
             CurrentUser = user;
+            ManagementUserInfo = await _onboardingService.GetManagementUserByIdentityUserIdAsync(user.Id) ?? new ManagementUser();
+
             return Page();
         }
     }

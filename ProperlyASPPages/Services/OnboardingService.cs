@@ -6,27 +6,27 @@ namespace ProperlyASPPages.Services;
 
 public class OnboardingService : IOnboardingService
 {
-    private readonly ICompanyRepository _companyRepository;
+    private readonly IManagementRepository _managementRepository;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<OnboardingService> _logger;
 
     public OnboardingService(
-        ICompanyRepository companyRepository,
+        IManagementRepository managementRepository,
         UserManager<ApplicationUser> userManager,
         ILogger<OnboardingService> logger)
     {
-        _companyRepository = companyRepository;
+        _managementRepository = managementRepository;
         _userManager = userManager;
         _logger = logger;
     }
 
-    public async Task<CompanyOnboardingResult> CreateCompanyAndUserAsync(string identityUserId, CompanyOnboardingRequest request)
+    public async Task<ManagementOnboardingResult> CreateManagementAndUserAsync(string identityUserId, ManagementOnboardingRequest request)
     {
         try
         {
-            var companyOrg = new CompanyOrg
+            var managementOrg = new ManagementOrg
             {
-                Name = request.CompanyName,
+                Name = request.ManagementName,
                 LegalName = request.LegalName,
                 TaxId = request.TaxId,
                 Address = request.Address,
@@ -40,20 +40,20 @@ public class OnboardingService : IOnboardingService
                 IsActive = true
             };
 
-            var companyOrgId = await _companyRepository.CreateCompanyOrgAsync(companyOrg);
+            var managementOrgId = await _managementRepository.CreateManagementOrgAsync(managementOrg);
 
-            if (companyOrgId <= 0)
+            if (managementOrgId <= 0)
             {
-                return new CompanyOnboardingResult
+                return new ManagementOnboardingResult
                 {
                     Success = false,
-                    ErrorMessage = "Failed to create company organization."
+                    ErrorMessage = "Failed to create management organization."
                 };
             }
 
-            var companyUser = new CompanyUser
+            var managementUser = new ManagementUser
             {
-                CompanyOrgId = companyOrgId,
+                ManagementOrgId = managementOrgId,
                 IdentityUserId = identityUserId,
                 FullName = request.UserFullName,
                 Email = request.UserEmail,
@@ -64,40 +64,40 @@ public class OnboardingService : IOnboardingService
                 LastLoginAt = DateTime.UtcNow
             };
 
-            var companyUserId = await _companyRepository.CreateCompanyUserAsync(companyUser);
+            var managementUserId = await _managementRepository.CreateManagementUserAsync(managementUser);
 
-            if (companyUserId <= 0)
+            if (managementUserId <= 0)
             {
-                return new CompanyOnboardingResult
+                return new ManagementOnboardingResult
                 {
                     Success = false,
-                    ErrorMessage = "Failed to create company user."
+                    ErrorMessage = "Failed to create management user."
                 };
             }
 
             var identityUser = await _userManager.FindByIdAsync(identityUserId);
             if (identityUser != null)
             {
-                identityUser.DomainTypes |= DomainUserType.Company;
-                identityUser.LastCompanyUserId = companyUserId;
+                identityUser.DomainTypes |= DomainUserType.Management;
+                identityUser.LastManagementUserId = managementUserId;
                 identityUser.LastDomainContextSwitchUtc = DateTime.UtcNow;
                 await _userManager.UpdateAsync(identityUser);
             }
 
-            _logger.LogInformation("Successfully created company {CompanyOrgId} and company user {CompanyUserId} for identity user {IdentityUserId}",
-                companyOrgId, companyUserId, identityUserId);
+            _logger.LogInformation("Successfully created management organization {ManagementOrgId} and management user {ManagementUserId} for identity user {IdentityUserId}",
+                managementOrgId, managementUserId, identityUserId);
 
-            return new CompanyOnboardingResult
+            return new ManagementOnboardingResult
             {
                 Success = true,
-                CompanyOrgId = companyOrgId,
-                CompanyUserId = companyUserId
+                ManagementOrgId = managementOrgId,
+                ManagementUserId = managementUserId
             };
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating company and user for identity user {IdentityUserId}", identityUserId);
-            return new CompanyOnboardingResult
+            _logger.LogError(ex, "Error creating management organization and user for identity user {IdentityUserId}", identityUserId);
+            return new ManagementOnboardingResult
             {
                 Success = false,
                 ErrorMessage = "An error occurred during onboarding. Please try again."
@@ -105,9 +105,9 @@ public class OnboardingService : IOnboardingService
         }
     }
 
-    public async Task<CompanyUser?> GetCompanyUserByIdentityUserIdAsync(string identityUserId)
+    public async Task<ManagementUser?> GetManagementUserByIdentityUserIdAsync(string identityUserId)
     {
-        return await _companyRepository.GetCompanyUserByIdentityUserIdAsync(identityUserId);
+        return await _managementRepository.GetManagementUserByIdentityUserIdAsync(identityUserId);
     }
 
     public async Task<bool> HasCompletedOnboardingAsync(string identityUserId)
@@ -116,17 +116,17 @@ public class OnboardingService : IOnboardingService
         if (identityUser == null)
             return false;
 
-        return identityUser.DomainTypes.HasFlag(DomainUserType.Company) && 
-               identityUser.LastCompanyUserId.HasValue;
+        return identityUser.DomainTypes.HasFlag(DomainUserType.Management) && 
+               identityUser.LastManagementUserId.HasValue;
     }
 
-    public async Task<CompanyInvitation> CreateInvitationAsync(int companyOrgId, string invitedByUserId, string email, string? fullName, string? role)
+    public async Task<ManagementInvitation> CreateInvitationAsync(int managementOrgId, string invitedByUserId, string email, string? fullName, string? role)
     {
         var token = Guid.NewGuid().ToString("N");
         
-        var invitation = new CompanyInvitation
+        var invitation = new ManagementInvitation
         {
-            CompanyOrgId = companyOrgId,
+            ManagementOrgId = managementOrgId,
             Email = email.ToLowerInvariant(),
             InvitedByUserId = invitedByUserId,
             InvitationToken = token,
@@ -136,25 +136,25 @@ public class OnboardingService : IOnboardingService
             ExpiresAt = DateTime.UtcNow.AddDays(7)
         };
 
-        var invitationId = await _companyRepository.CreateInvitationAsync(invitation);
+        var invitationId = await _managementRepository.CreateInvitationAsync(invitation);
         invitation.InvitationId = invitationId;
 
-        _logger.LogInformation("Created invitation {InvitationId} for {Email} to company {CompanyOrgId}",
-            invitationId, email, companyOrgId);
+        _logger.LogInformation("Created invitation {InvitationId} for {Email} to management organization {ManagementOrgId}",
+            invitationId, email, managementOrgId);
 
         return invitation;
     }
 
-    public async Task<CompanyInvitation?> GetInvitationByTokenAsync(string token)
+    public async Task<ManagementInvitation?> GetInvitationByTokenAsync(string token)
     {
-        return await _companyRepository.GetInvitationByTokenAsync(token);
+        return await _managementRepository.GetInvitationByTokenAsync(token);
     }
 
     public async Task<bool> AcceptInvitationAsync(string token, string identityUserId, string fullName)
     {
         try
         {
-            var invitation = await _companyRepository.GetInvitationByTokenAsync(token);
+            var invitation = await _managementRepository.GetInvitationByTokenAsync(token);
             
             if (invitation == null)
             {
@@ -170,7 +170,7 @@ public class OnboardingService : IOnboardingService
 
             if (invitation.ExpiresAt < DateTime.UtcNow)
             {
-                await _companyRepository.UpdateInvitationStatusAsync(invitation.InvitationId!.Value, InvitationStatus.Expired);
+                await _managementRepository.UpdateInvitationStatusAsync(invitation.InvitationId!.Value, InvitationStatus.Expired);
                 _logger.LogWarning("Invitation {InvitationId} has expired", invitation.InvitationId);
                 return false;
             }
@@ -189,16 +189,16 @@ public class OnboardingService : IOnboardingService
                 return false;
             }
 
-            var companyUser = await JoinCompanyViaInvitationAsync(
+            var managementUser = await JoinManagementViaInvitationAsync(
                 identityUserId,
-                invitation.CompanyOrgId!.Value,
+                invitation.ManagementOrgId!.Value,
                 fullName,
                 identityUser.Email ?? invitation.Email!,
                 invitation.Role);
 
-            if (companyUser != null)
+            if (managementUser != null)
             {
-                await _companyRepository.UpdateInvitationStatusAsync(
+                await _managementRepository.UpdateInvitationStatusAsync(
                     invitation.InvitationId!.Value,
                     InvitationStatus.Accepted,
                     identityUserId);
@@ -217,37 +217,37 @@ public class OnboardingService : IOnboardingService
         }
     }
 
-    public async Task<bool> CanUserInviteToCompanyAsync(string identityUserId, int companyOrgId)
+    public async Task<bool> CanUserInviteToManagementAsync(string identityUserId, int managementOrgId)
     {
-        return await _companyRepository.IsUserAdminOfCompanyAsync(identityUserId, companyOrgId);
+        return await _managementRepository.IsUserAdminOfManagementAsync(identityUserId, managementOrgId);
     }
 
-    public async Task<List<CompanyInvitation>> GetPendingInvitationsForCompanyAsync(int companyOrgId)
+    public async Task<List<ManagementInvitation>> GetPendingInvitationsForManagementAsync(int managementOrgId)
     {
-        return await _companyRepository.GetPendingInvitationsByCompanyAsync(companyOrgId);
+        return await _managementRepository.GetPendingInvitationsByManagementAsync(managementOrgId);
     }
 
-    public async Task<CompanyUser?> JoinCompanyViaInvitationAsync(string identityUserId, int companyOrgId, string fullName, string email, string? role)
+    public async Task<ManagementUser?> JoinManagementViaInvitationAsync(string identityUserId, int managementOrgId, string fullName, string email, string? role)
     {
         try
         {
-            var company = await _companyRepository.GetCompanyOrgByIdAsync(companyOrgId);
-            if (company == null || company.IsActive != true)
+            var management = await _managementRepository.GetManagementOrgByIdAsync(managementOrgId);
+            if (management == null || management.IsActive != true)
             {
-                _logger.LogWarning("Cannot join company {CompanyOrgId} - company not found or inactive", companyOrgId);
+                _logger.LogWarning("Cannot join management organization {ManagementOrgId} - organization not found or inactive", managementOrgId);
                 return null;
             }
 
-            var existingUser = await _companyRepository.GetCompanyUsersByIdentityUserIdAsync(identityUserId);
-            if (existingUser.Any(u => u.CompanyOrgId == companyOrgId))
+            var existingUser = await _managementRepository.GetManagementUsersByIdentityUserIdAsync(identityUserId);
+            if (existingUser.Any(u => u.ManagementOrgId == managementOrgId))
             {
-                _logger.LogWarning("User {IdentityUserId} is already a member of company {CompanyOrgId}", identityUserId, companyOrgId);
-                return existingUser.First(u => u.CompanyOrgId == companyOrgId);
+                _logger.LogWarning("User {IdentityUserId} is already a member of management organization {ManagementOrgId}", identityUserId, managementOrgId);
+                return existingUser.First(u => u.ManagementOrgId == managementOrgId);
             }
 
-            var companyUser = new CompanyUser
+            var managementUser = new ManagementUser
             {
-                CompanyOrgId = companyOrgId,
+                ManagementOrgId = managementOrgId,
                 IdentityUserId = identityUserId,
                 FullName = fullName,
                 Email = email,
@@ -256,9 +256,9 @@ public class OnboardingService : IOnboardingService
                 LastLoginAt = DateTime.UtcNow
             };
 
-            var companyUserId = await _companyRepository.CreateCompanyUserAsync(companyUser);
+            var managementUserId = await _managementRepository.CreateManagementUserAsync(managementUser);
 
-            if (companyUserId <= 0)
+            if (managementUserId <= 0)
             {
                 return null;
             }
@@ -266,74 +266,18 @@ public class OnboardingService : IOnboardingService
             var identityUser = await _userManager.FindByIdAsync(identityUserId);
             if (identityUser != null)
             {
-                identityUser.DomainTypes |= DomainUserType.Company;
-                identityUser.LastCompanyUserId = companyUserId;
+                identityUser.DomainTypes |= DomainUserType.Management;
+                identityUser.LastManagementUserId = managementUserId;
                 identityUser.LastDomainContextSwitchUtc = DateTime.UtcNow;
                 await _userManager.UpdateAsync(identityUser);
             }
 
-            companyUser.CompanyUserId = companyUserId;
-            return companyUser;
+            managementUser.ManagementUserId = managementUserId;
+            return managementUser;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error joining company {CompanyOrgId} via invitation for identity user {IdentityUserId}", companyOrgId, identityUserId);
-            return null;
-        }
-    }
-
-    // Kept for backward compatibility but should not be exposed publicly
-    private async Task<List<CompanyOrg>> SearchCompaniesAsync(string searchTerm)
-    {
-        return await _companyRepository.SearchCompanyOrgsByNameAsync(searchTerm);
-    }
-
-    // Deprecated - Use JoinCompanyViaInvitationAsync instead
-    [Obsolete("Direct company joining is not allowed. Use invitation-based joining instead.")]
-    public async Task<CompanyUser?> JoinExistingCompanyAsync(string identityUserId, int companyOrgId, string fullName, string email)
-    {
-        try
-        {
-            var company = await _companyRepository.GetCompanyOrgByIdAsync(companyOrgId);
-            if (company == null || company.IsActive != true)
-            {
-                _logger.LogWarning("Cannot join company {CompanyOrgId} - company not found or inactive", companyOrgId);
-                return null;
-            }
-
-            var companyUser = new CompanyUser
-            {
-                CompanyOrgId = companyOrgId,
-                IdentityUserId = identityUserId,
-                FullName = fullName,
-                Email = email,
-                Role = "User",
-                IsActive = true,
-                LastLoginAt = DateTime.UtcNow
-            };
-
-            var companyUserId = await _companyRepository.CreateCompanyUserAsync(companyUser);
-
-            if (companyUserId <= 0)
-            {
-                return null;
-            }
-
-            var identityUser = await _userManager.FindByIdAsync(identityUserId);
-            if (identityUser != null)
-            {
-                identityUser.DomainTypes |= DomainUserType.Company;
-                identityUser.LastCompanyUserId = companyUserId;
-                identityUser.LastDomainContextSwitchUtc = DateTime.UtcNow;
-                await _userManager.UpdateAsync(identityUser);
-            }
-
-            companyUser.CompanyUserId = companyUserId;
-            return companyUser;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error joining company {CompanyOrgId} for identity user {IdentityUserId}", companyOrgId, identityUserId);
+            _logger.LogError(ex, "Error joining management organization {ManagementOrgId} via invitation for identity user {IdentityUserId}", managementOrgId, identityUserId);
             return null;
         }
     }

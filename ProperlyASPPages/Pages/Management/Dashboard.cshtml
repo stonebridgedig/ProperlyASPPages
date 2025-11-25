@@ -1,25 +1,25 @@
 @page
-@model Company.DashboardModel
+@model Management.DashboardModel
 @{
-    ViewData["Title"] = "Company Dashboard";
+    ViewData["Title"] = "Management Dashboard";
 }
 
 <div class="row mb-4">
     <div class="col-md-8">
-        <h1 class="h2">Company Dashboard</h1>
-        <p class="text-muted">Manage your company operations and team</p>
+        <h1 class="h2">Management Dashboard</h1>
+        <p class="text-muted">Manage your organization operations and team</p>
     </div>
 </div>
 
-@if (Model.CompanyUserInfo?.CompanyOrgId != null)
+@if (Model.ManagementUserInfo?.ManagementOrgId != null)
 {
     <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Welcome, @Model.CompanyUserInfo.FullName</h5>
+                    <h5 class="card-title">Welcome, @Model.ManagementUserInfo.FullName</h5>
                     <p class="card-text">
-                        You are logged in as a Company User for @Model.CompanyUserInfo.CompanyOrgId.
+                        You are logged in as a Management User for @Model.ManagementUserInfo.ManagementOrgId.
                     </p>
                 </div>
             </div>
@@ -30,11 +30,11 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Company Settings</h5>
+                    <h5 class="mb-0">Management Settings</h5>
                 </div>
                 <div class="card-body">
-                    <p>Manage company information, policies, and configurations.</p>
-                    <a asp-page="/Company/Index" class="btn btn-primary btn-sm">Go to Settings</a>
+                    <p>Manage organization information, policies, and configurations.</p>
+                    <a asp-page="/Management/Index" class="btn btn-primary btn-sm">Go to Settings</a>
                 </div>
             </div>
         </div>
@@ -55,7 +55,7 @@
 else
 {
     <div class="alert alert-warning">
-        <p>Company information not found. Please complete your company setup.</p>
-        <a asp-page="/Company/Index" class="btn btn-primary">Complete Setup</a>
+        <p>Management organization information not found. Please complete your setup.</p>
+        <a asp-page="/Management/Index" class="btn btn-primary">Complete Setup</a>
     </div>
 }

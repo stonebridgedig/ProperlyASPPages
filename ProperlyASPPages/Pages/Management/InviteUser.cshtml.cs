@@ -7,7 +7,7 @@ using ProperlyASPPages.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using System.ComponentModel.DataAnnotations;
 
-namespace ProperlyASPPages.Pages.Company;
+namespace ProperlyASPPages.Pages.Management;
 
 [Authorize]
 public class InviteUserModel : PageModel
@@ -35,8 +35,8 @@ public class InviteUserModel : PageModel
     [TempData]
     public string? StatusMessage { get; set; }
 
-    public List<CompanyInvitation> PendingInvitations { get; set; } = new();
-    public int CurrentCompanyOrgId { get; set; }
+    public List<ManagementInvitation> PendingInvitations { get; set; } = new();
+    public int CurrentManagementOrgId { get; set; }
 
     public class InputModel
     {
@@ -61,27 +61,27 @@ public class InviteUserModel : PageModel
             return NotFound();
         }
 
-        if (!user.LastCompanyUserId.HasValue)
+        if (!user.LastManagementUserId.HasValue)
         {
-            return RedirectToPage("/Onboarding/CompanySetup");
+            return RedirectToPage("/Onboarding/ManagementSetup");
         }
 
-        var companyUser = await _onboardingService.GetCompanyUserByIdentityUserIdAsync(user.Id);
-        if (companyUser?.CompanyOrgId == null)
+        var managementUser = await _onboardingService.GetManagementUserByIdentityUserIdAsync(user.Id);
+        if (managementUser?.ManagementOrgId == null)
         {
-            return RedirectToPage("/Onboarding/CompanySetup");
+            return RedirectToPage("/Onboarding/ManagementSetup");
         }
 
-        CurrentCompanyOrgId = companyUser.CompanyOrgId.Value;
+        CurrentManagementOrgId = managementUser.ManagementOrgId.Value;
 
-        var canInvite = await _onboardingService.CanUserInviteToCompanyAsync(user.Id, CurrentCompanyOrgId);
+        var canInvite = await _onboardingService.CanUserInviteToManagementAsync(user.Id, CurrentManagementOrgId);
         if (!canInvite)
         {
-            StatusMessage = "You do not have permission to invite users to this company.";
+            StatusMessage = "You do not have permission to invite users to this management organization.";
             return Page();
         }
 
-        PendingInvitations = await _onboardingService.GetPendingInvitationsForCompanyAsync(CurrentCompanyOrgId);
+        PendingInvitations = await _onboardingService.GetPendingInvitationsForManagementAsync(CurrentManagementOrgId);
 
         return Page();
     }
@@ -94,36 +94,36 @@ public class InviteUserModel : PageModel
             return NotFound();
         }
 
-        if (!user.LastCompanyUserId.HasValue)
+        if (!user.LastManagementUserId.HasValue)
         {
-            return RedirectToPage("/Onboarding/CompanySetup");
+            return RedirectToPage("/Onboarding/ManagementSetup");
         }
 
-        var companyUser = await _onboardingService.GetCompanyUserByIdentityUserIdAsync(user.Id);
-        if (companyUser?.CompanyOrgId == null)
+        var managementUser = await _onboardingService.GetManagementUserByIdentityUserIdAsync(user.Id);
+        if (managementUser?.ManagementOrgId == null)
         {
-            return RedirectToPage("/Onboarding/CompanySetup");
+            return RedirectToPage("/Onboarding/ManagementSetup");
         }
 
-        CurrentCompanyOrgId = companyUser.CompanyOrgId.Value;
+        CurrentManagementOrgId = managementUser.ManagementOrgId.Value;
 
-        var canInvite = await _onboardingService.CanUserInviteToCompanyAsync(user.Id, CurrentCompanyOrgId);
+        var canInvite = await _onboardingService.CanUserInviteToManagementAsync(user.Id, CurrentManagementOrgId);
         if (!canInvite)
         {
-            ModelState.AddModelError(string.Empty, "You do not have permission to invite users to this company.");
+            ModelState.AddModelError(string.Empty, "You do not have permission to invite users to this management organization.");
             return Page();
         }
 
         if (!ModelState.IsValid)
         {
-            PendingInvitations = await _onboardingService.GetPendingInvitationsForCompanyAsync(CurrentCompanyOrgId);
+            PendingInvitations = await _onboardingService.GetPendingInvitationsForManagementAsync(CurrentManagementOrgId);
             return Page();
         }
 
         try
         {
             var invitation = await _onboardingService.CreateInvitationAsync(
-                CurrentCompanyOrgId,
+                CurrentManagementOrgId,
                 user.Id,
                 Input.Email,
                 Input.FullName,
@@ -137,9 +137,9 @@ public class InviteUserModel : PageModel
 
             await _emailSender.SendEmailAsync(
                 Input.Email,
-                "You're invited to join a company on Properly",
+                "You're invited to join a management organization on Properly",
                 $"<h2>You've been invited!</h2>" +
-                $"<p>You've been invited to join a company on Properly.</p>" +
+                $"<p>You've been invited to join a management organization on Properly.</p>" +
                 $"<p><a href='{inviteUrl}'>Click here to accept the invitation</a></p>" +
                 $"<p>This invitation will expire in 7 days.</p>");
 
@@ -147,7 +147,7 @@ public class InviteUserModel : PageModel
             
             Input = new InputModel { Role = "User" };
             
-            PendingInvitations = await _onboardingService.GetPendingInvitationsForCompanyAsync(CurrentCompanyOrgId);
+            PendingInvitations = await _onboardingService.GetPendingInvitationsForManagementAsync(CurrentManagementOrgId);
             
             return Page();
         }
@@ -155,7 +155,7 @@ public class InviteUserModel : PageModel
         {
             _logger.LogError(ex, "Error sending invitation to {Email}", Input.Email);
             ModelState.AddModelError(string.Empty, "An error occurred while sending the invitation. Please try again.");
-            PendingInvitations = await _onboardingService.GetPendingInvitationsForCompanyAsync(CurrentCompanyOrgId);
+            PendingInvitations = await _onboardingService.GetPendingInvitationsForManagementAsync(CurrentManagementOrgId);
             return Page();
         }
     }

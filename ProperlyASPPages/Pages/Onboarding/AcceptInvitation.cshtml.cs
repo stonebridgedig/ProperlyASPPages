@@ -13,18 +13,18 @@ namespace ProperlyASPPages.Pages.Onboarding;
 public class AcceptInvitationModel : PageModel
 {
     private readonly IOnboardingService _onboardingService;
-    private readonly ICompanyRepository _companyRepository;
+    private readonly IManagementRepository _managementRepository;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<AcceptInvitationModel> _logger;
 
     public AcceptInvitationModel(
         IOnboardingService onboardingService,
-        ICompanyRepository companyRepository,
+        IManagementRepository managementRepository,
         UserManager<ApplicationUser> userManager,
         ILogger<AcceptInvitationModel> logger)
     {
         _onboardingService = onboardingService;
-        _companyRepository = companyRepository;
+        _managementRepository = managementRepository;
         _userManager = userManager;
         _logger = logger;
     }
@@ -35,8 +35,8 @@ public class AcceptInvitationModel : PageModel
     [TempData]
     public string? StatusMessage { get; set; }
 
-    public CompanyInvitation? Invitation { get; set; }
-    public CompanyOrg? Company { get; set; }
+    public ManagementInvitation? Invitation { get; set; }
+    public ManagementOrg? Management { get; set; }
     public bool IsValid { get; set; }
     public string? ErrorMessage { get; set; }
 
@@ -90,11 +90,11 @@ public class AcceptInvitationModel : PageModel
             return Page();
         }
 
-        Company = await _companyRepository.GetCompanyOrgByIdAsync(Invitation.CompanyOrgId!.Value);
+        Management = await _managementRepository.GetManagementOrgByIdAsync(Invitation.ManagementOrgId!.Value);
         
-        if (Company == null)
+        if (Management == null)
         {
-            ErrorMessage = "Company not found.";
+            ErrorMessage = "Management organization not found.";
             return Page();
         }
 
@@ -125,9 +125,9 @@ public class AcceptInvitationModel : PageModel
         if (!ModelState.IsValid)
         {
             Invitation = await _onboardingService.GetInvitationByTokenAsync(Token);
-            if (Invitation?.CompanyOrgId != null)
+            if (Invitation?.ManagementOrgId != null)
             {
-                Company = await _companyRepository.GetCompanyOrgByIdAsync(Invitation.CompanyOrgId.Value);
+                Management = await _managementRepository.GetManagementOrgByIdAsync(Invitation.ManagementOrgId.Value);
             }
             return Page();
         }
@@ -136,16 +136,16 @@ public class AcceptInvitationModel : PageModel
 
         if (success)
         {
-            StatusMessage = "You have successfully joined the company!";
+            StatusMessage = "You have successfully joined the management organization!";
             return RedirectToPage("/Index");
         }
         else
         {
             ErrorMessage = "Unable to accept invitation. Please try again or contact support.";
             Invitation = await _onboardingService.GetInvitationByTokenAsync(Token);
-            if (Invitation?.CompanyOrgId != null)
+            if (Invitation?.ManagementOrgId != null)
             {
-                Company = await _companyRepository.GetCompanyOrgByIdAsync(Invitation.CompanyOrgId.Value);
+                Management = await _managementRepository.GetManagementOrgByIdAsync(Invitation.ManagementOrgId.Value);
             }
             return Page();
         }

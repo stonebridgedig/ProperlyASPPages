@@ -11,12 +11,12 @@ public enum InvitationStatus
     Cancelled = 4
 }
 
-public class CompanyInvitation
+public class ManagementInvitation
 {
     [Key]
     public int? InvitationId { get; set; }
     
-    public int? CompanyOrgId { get; set; }
+    public int? ManagementOrgId { get; set; }
     
     [Required]
     [EmailAddress]

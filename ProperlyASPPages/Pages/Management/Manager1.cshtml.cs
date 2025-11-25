@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Properly.Models;
 using ProperlyASPPages.Services;
 
-namespace ProperlyASPPages.Pages.Company
+namespace ProperlyASPPages.Pages.Management
 {
     [Authorize]
     public class Manager1Model : PageModel
@@ -24,7 +24,7 @@ namespace ProperlyASPPages.Pages.Company
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null || _roleContextService.GetCurrentRole() != DomainUserType.Company)
+            if (user == null || _roleContextService.GetCurrentRole() != DomainUserType.Management)
             {
                 return RedirectToPage("/Dashboard");
             }

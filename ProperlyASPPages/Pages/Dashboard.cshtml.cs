@@ -20,7 +20,7 @@ namespace ProperlyASPPages.Pages
         }
 
         public ApplicationUser CurrentUser { get; set; } = null!;
-        public bool HasCompanyRole { get; set; }
+        public bool HasManagementRole { get; set; }
         public bool HasOwnerRole { get; set; }
         public bool HasTenantRole { get; set; }
         public bool HasServiceRole { get; set; }
@@ -34,7 +34,7 @@ namespace ProperlyASPPages.Pages
             }
 
             CurrentUser = user;
-            HasCompanyRole = user.DomainTypes.HasFlag(DomainUserType.Company);
+            HasManagementRole = user.DomainTypes.HasFlag(DomainUserType.Management);
             HasOwnerRole = user.DomainTypes.HasFlag(DomainUserType.Owner);
             HasTenantRole = user.DomainTypes.HasFlag(DomainUserType.Tenant);
             HasServiceRole = user.DomainTypes.HasFlag(DomainUserType.Service);
@@ -44,7 +44,7 @@ namespace ProperlyASPPages.Pages
         {
             var domainType = role switch
             {
-                "Company" => DomainUserType.Company,
+                "Management" => DomainUserType.Management,
                 "Owner" => DomainUserType.Owner,
                 "Tenant" => DomainUserType.Tenant,
                 "Service" => DomainUserType.Service,
@@ -56,7 +56,7 @@ namespace ProperlyASPPages.Pages
             // Redirect to the appropriate role dashboard
             return role switch
             {
-                "Company" => RedirectToPage("/Company/Dashboard"),
+                "Management" => RedirectToPage("/Management/Dashboard"),
                 "Owner" => RedirectToPage("/Owner/Dashboard"),
                 "Tenant" => RedirectToPage("/Tenant/Dashboard"),
                 "Service" => RedirectToPage("/Service/Dashboard"),

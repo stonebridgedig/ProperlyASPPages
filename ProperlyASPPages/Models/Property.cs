@@ -32,7 +32,7 @@ public class Property
     public int? PropertyId { get; set; }
 
     public int? OwnerOrgId { get; set; }
-    public int? CompanyOrgId { get; set; }
+    public int? ManagementOrgId { get; set; }
 
     public string? Name { get; set; }
     public string? Type { get; set; }

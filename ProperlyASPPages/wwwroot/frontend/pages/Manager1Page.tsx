@@ -1,19 +1,19 @@
 import React from 'react';
-import { CompanyOrgComponent } from '../frontend/components/CompanyOrgComponent';
+import { ManagementOrgComponent } from '../components/ManagementOrgComponent';
 
-export const Manager1Page: React.FC<{ companyId: number }> = ({ companyId }) => {
+export const Manager1Page: React.FC<{ managementId: number }> = ({ managementId }) => {
   return (
     <div className="container mt-4">
       <div className="row mb-4">
         <div className="col-md-8">
-          <h1 className="h2">Manager1 - Company Dashboard</h1>
-          <p className="text-muted">Company Role - Manager1 Page</p>
+          <h1 className="h2">Manager1 - Management Dashboard</h1>
+          <p className="text-muted">Management Role - Manager1 Page</p>
         </div>
       </div>
 
       <div className="row">
         <div className="col-md-8">
-          <CompanyOrgComponent companyId={companyId} />
+          <ManagementOrgComponent managementId={managementId} />
         </div>
       </div>
 

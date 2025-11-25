@@ -46,9 +46,9 @@
                                     }
                                 </td>
                                 <td>
-                                    @if (user.DomainTypes.HasFlag(Properly.Models.DomainUserType.Company))
+                                    @if (user.DomainTypes.HasFlag(Properly.Models.DomainUserType.Management))
                                     {
-                                        <span class="badge bg-primary">Company</span>
+                                        <span class="badge bg-primary">Management</span>
                                     }
                                     @if (user.DomainTypes.HasFlag(Properly.Models.DomainUserType.Owner))
                                     {

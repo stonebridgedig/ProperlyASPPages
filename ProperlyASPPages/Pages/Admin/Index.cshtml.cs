@@ -11,12 +11,12 @@ namespace ProperlyASPPages.Pages.Admin;
 public class IndexModel : PageModel
 {
     private readonly ISystemAdminRepository _adminRepository;
-    private readonly ICompanyRepository _companyRepository;
+    private readonly IManagementRepository _managementRepository;
 
-    public IndexModel(ISystemAdminRepository adminRepository, ICompanyRepository companyRepository)
+    public IndexModel(ISystemAdminRepository adminRepository, IManagementRepository managementRepository)
     {
         _adminRepository = adminRepository;
-        _companyRepository = companyRepository;
+        _managementRepository = managementRepository;
     }
 
     public SystemAdmin CurrentAdmin { get; set; } = null!;
@@ -68,9 +68,9 @@ public class IndexModel : PageModel
 
     private async Task LoadStatsAsync()
     {
-        var companies = await _companyRepository.GetAllCompaniesAsync();
-        Stats.TotalCompanies = companies.Count;
-        Stats.ActiveCompanies = companies.Count(c => c.IsActive ?? false);
+        var managementOrgs = await _managementRepository.GetAllManagementOrgsAsync();
+        Stats.TotalManagements = managementOrgs.Count;
+        Stats.ActiveManagements = managementOrgs.Count(m => m.IsActive ?? false);
         
         var admins = await _adminRepository.GetAllAsync(includeInactive: true);
         Stats.TotalAdmins = admins.Count;
@@ -79,8 +79,8 @@ public class IndexModel : PageModel
 
     public class DashboardStats
     {
-        public int TotalCompanies { get; set; }
-        public int ActiveCompanies { get; set; }
+        public int TotalManagements { get; set; }
+        public int ActiveManagements { get; set; }
         public int TotalAdmins { get; set; }
         public int ActiveAdmins { get; set; }
         public int TotalUsers { get; set; }

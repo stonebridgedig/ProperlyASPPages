@@ -4,21 +4,21 @@ namespace ProperlyASPPages.Services;
 
 public interface IOnboardingService
 {
-    Task<CompanyOnboardingResult> CreateCompanyAndUserAsync(string identityUserId, CompanyOnboardingRequest request);
-    Task<CompanyUser?> GetCompanyUserByIdentityUserIdAsync(string identityUserId);
+    Task<ManagementOnboardingResult> CreateManagementAndUserAsync(string identityUserId, ManagementOnboardingRequest request);
+    Task<ManagementUser?> GetManagementUserByIdentityUserIdAsync(string identityUserId);
     Task<bool> HasCompletedOnboardingAsync(string identityUserId);
     
-    Task<CompanyInvitation> CreateInvitationAsync(int companyOrgId, string invitedByUserId, string email, string? fullName, string? role);
-    Task<CompanyInvitation?> GetInvitationByTokenAsync(string token);
+    Task<ManagementInvitation> CreateInvitationAsync(int managementOrgId, string invitedByUserId, string email, string? fullName, string? role);
+    Task<ManagementInvitation?> GetInvitationByTokenAsync(string token);
     Task<bool> AcceptInvitationAsync(string token, string identityUserId, string fullName);
-    Task<bool> CanUserInviteToCompanyAsync(string identityUserId, int companyOrgId);
-    Task<List<CompanyInvitation>> GetPendingInvitationsForCompanyAsync(int companyOrgId);
-    Task<CompanyUser?> JoinCompanyViaInvitationAsync(string identityUserId, int companyOrgId, string fullName, string email, string? role);
+    Task<bool> CanUserInviteToManagementAsync(string identityUserId, int managementOrgId);
+    Task<List<ManagementInvitation>> GetPendingInvitationsForManagementAsync(int managementOrgId);
+    Task<ManagementUser?> JoinManagementViaInvitationAsync(string identityUserId, int managementOrgId, string fullName, string email, string? role);
 }
 
-public class CompanyOnboardingRequest
+public class ManagementOnboardingRequest
 {
-    public required string CompanyName { get; set; }
+    public required string ManagementName { get; set; }
     public string? LegalName { get; set; }
     public string? TaxId { get; set; }
     public string? Address { get; set; }
@@ -37,10 +37,10 @@ public class CompanyOnboardingRequest
     public string? UserRole { get; set; }
 }
 
-public class CompanyOnboardingResult
+public class ManagementOnboardingResult
 {
     public bool Success { get; set; }
-    public int? CompanyOrgId { get; set; }
-    public int? CompanyUserId { get; set; }
+    public int? ManagementOrgId { get; set; }
+    public int? ManagementUserId { get; set; }
     public string? ErrorMessage { get; set; }
 }

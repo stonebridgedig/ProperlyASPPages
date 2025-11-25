@@ -8,17 +8,17 @@ namespace ProperlyASPPages.Controllers.Api;
 [Route("api/[controller]")]
 public class InvitationsController : ControllerBase
 {
-    private readonly ICompanyRepository _companyRepository;
+    private readonly IManagementRepository _managementRepository;
 
-    public InvitationsController(ICompanyRepository companyRepository)
+    public InvitationsController(IManagementRepository managementRepository)
     {
-        _companyRepository = companyRepository;
+        _managementRepository = managementRepository;
     }
 
     [HttpGet("token/{token}")]
     public async Task<IActionResult> GetInvitationByToken(string token)
     {
-        var invitation = await _companyRepository.GetInvitationByTokenAsync(token);
+        var invitation = await _managementRepository.GetInvitationByTokenAsync(token);
         if (invitation == null)
             return NotFound();
 
@@ -28,26 +28,26 @@ public class InvitationsController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetInvitation(int id)
     {
-        var invitation = await _companyRepository.GetInvitationByIdAsync(id);
+        var invitation = await _managementRepository.GetInvitationByIdAsync(id);
         if (invitation == null)
             return NotFound();
 
         return Ok(invitation);
     }
 
-    [HttpGet("company/{companyId:int}")]
-    public async Task<IActionResult> GetPendingInvitations(int companyId)
+    [HttpGet("management/{managementId:int}")]
+    public async Task<IActionResult> GetPendingInvitations(int managementId)
     {
-        var invitations = await _companyRepository.GetPendingInvitationsByCompanyAsync(companyId);
+        var invitations = await _managementRepository.GetPendingInvitationsByManagementAsync(managementId);
         return Ok(invitations);
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateInvitation([FromBody] CompanyInvitation invitation)
+    public async Task<IActionResult> CreateInvitation([FromBody] ManagementInvitation invitation)
     {
         try
         {
-            var id = await _companyRepository.CreateInvitationAsync(invitation);
+            var id = await _managementRepository.CreateInvitationAsync(invitation);
             return CreatedAtAction(nameof(GetInvitation), new { id }, new { id });
         }
         catch (Exception ex)
@@ -61,7 +61,7 @@ public class InvitationsController : ControllerBase
     {
         try
         {
-            var success = await _companyRepository.UpdateInvitationStatusAsync(
+            var success = await _managementRepository.UpdateInvitationStatusAsync(
                 id,
                 request.Status,
                 request.AcceptedByUserId

@@ -4,31 +4,31 @@ using Properly.Models;
 using ProperlyASPPages.Authorization;
 using ProperlyASPPages.Repositories;
 
-namespace ProperlyASPPages.Pages.Admin.Companies;
+namespace ProperlyASPPages.Pages.Admin.Management;
 
 [Authorize(Policy = SystemAdminPolicies.CanManageCompanies)]
 public class IndexModel : PageModel
 {
-    private readonly ICompanyRepository _companyRepository;
+    private readonly IManagementRepository _managementRepository;
 
-    public IndexModel(ICompanyRepository companyRepository)
+    public IndexModel(IManagementRepository managementRepository)
     {
-        _companyRepository = companyRepository;
+        _managementRepository = managementRepository;
     }
 
-    public List<CompanyOrg> Companies { get; set; } = new();
-    public Dictionary<int, int> CompanyUserCounts { get; set; } = new();
+    public List<ManagementOrg> ManagementOrgs { get; set; } = new();
+    public Dictionary<int, int> ManagementUserCounts { get; set; } = new();
 
     public async Task OnGetAsync()
     {
-        Companies = await _companyRepository.GetAllCompaniesAsync();
+        ManagementOrgs = await _managementRepository.GetAllManagementOrgsAsync();
         
-        foreach (var company in Companies)
+        foreach (var management in ManagementOrgs)
         {
-            if (company.CompanyOrgId.HasValue)
+            if (management.ManagementOrgId.HasValue)
             {
-                var users = await _companyRepository.GetCompanyUsersAsync(company.CompanyOrgId.Value);
-                CompanyUserCounts[company.CompanyOrgId.Value] = users.Count;
+                var users = await _managementRepository.GetManagementUsersAsync(management.ManagementOrgId.Value);
+                ManagementUserCounts[management.ManagementOrgId.Value] = users.Count;
             }
         }
     }

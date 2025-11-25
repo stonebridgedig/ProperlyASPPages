@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { getCompanyOrg } from './api';
+import { getManagementOrg } from '../api';
 
-interface CompanyOrgProps {
-  companyId: number;
+interface ManagementOrgProps {
+  managementId: number;
 }
 
-export const CompanyOrgComponent: React.FC<CompanyOrgProps> = ({ companyId }) => {
-  const [company, setCompany] = useState<any>(null);
+export const ManagementOrgComponent: React.FC<ManagementOrgProps> = ({ managementId }) => {
+  const [management, setManagement] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getCompanyOrg(companyId)
-      .then(setCompany)
+    getManagementOrg(managementId)
+      .then(setManagement)
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
-  }, [companyId]);
+  }, [managementId]);
 
   if (loading) return <div className="alert alert-info">Loading...</div>;
   if (error) return <div className="alert alert-danger">Error: {error}</div>;
@@ -23,9 +23,9 @@ export const CompanyOrgComponent: React.FC<CompanyOrgProps> = ({ companyId }) =>
   return (
     <div className="card">
       <div className="card-body">
-        <h5 className="card-title">{company?.Name}</h5>
-        <p className="card-text">{company?.Email}</p>
-        <small className="text-muted">{company?.Address}, {company?.City}, {company?.State}</small>
+        <h5 className="card-title">{management?.Name}</h5>
+        <p className="card-text">{management?.Email}</p>
+        <small className="text-muted">{management?.Address}, {management?.City}, {management?.State}</small>
       </div>
     </div>
   );

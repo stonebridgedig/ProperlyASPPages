@@ -9,12 +9,12 @@ using System.ComponentModel.DataAnnotations;
 namespace ProperlyASPPages.Pages.Onboarding;
 
 [Authorize]
-public class CompanySetupModel : PageModel
+public class ManagementSetupModel : PageModel
 {
     private readonly IOnboardingService _onboardingService;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public CompanySetupModel(IOnboardingService onboardingService, UserManager<ApplicationUser> userManager)
+    public ManagementSetupModel(IOnboardingService onboardingService, UserManager<ApplicationUser> userManager)
     {
         _onboardingService = onboardingService;
         _userManager = userManager;
@@ -31,8 +31,8 @@ public class CompanySetupModel : PageModel
     public class InputModel
     {
         [Required]
-        [Display(Name = "Company Name")]
-        public string CompanyName { get; set; } = string.Empty;
+        [Display(Name = "Management Name")]
+        public string ManagementName { get; set; } = string.Empty;
 
         [Display(Name = "Legal Name")]
         public string? LegalName { get; set; }
@@ -60,7 +60,7 @@ public class CompanySetupModel : PageModel
         public string? Phone { get; set; }
 
         [EmailAddress]
-        [Display(Name = "Company Email")]
+        [Display(Name = "Management Email")]
         public string? Email { get; set; }
 
         [Display(Name = "Website")]
@@ -118,9 +118,9 @@ public class CompanySetupModel : PageModel
             return NotFound();
         }
 
-        var request = new CompanyOnboardingRequest
+        var request = new ManagementOnboardingRequest
         {
-            CompanyName = Input.CompanyName,
+            ManagementName = Input.ManagementName,
             LegalName = Input.LegalName,
             TaxId = Input.TaxId,
             Address = Input.Address,
@@ -138,11 +138,11 @@ public class CompanySetupModel : PageModel
             UserRole = "Admin"
         };
 
-        var result = await _onboardingService.CreateCompanyAndUserAsync(user.Id, request);
+        var result = await _onboardingService.CreateManagementAndUserAsync(user.Id, request);
 
         if (result.Success)
         {
-            StatusMessage = "Company setup completed successfully!";
+            StatusMessage = "Management setup completed successfully!";
             return LocalRedirect(returnUrl);
         }
         else

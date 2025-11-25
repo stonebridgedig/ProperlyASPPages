@@ -9,7 +9,7 @@
     <p class="lead">Select your role to get started</p>
 </div>
 
-@if (!Model.HasCompanyRole && !Model.HasOwnerRole && !Model.HasTenantRole && !Model.HasServiceRole)
+@if (!Model.HasManagementRole && !Model.HasOwnerRole && !Model.HasTenantRole && !Model.HasServiceRole)
 {
     <div class="alert alert-warning" role="alert">
         <h4 class="alert-heading">No Roles Assigned</h4>
@@ -19,19 +19,19 @@
 else
 {
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-        @if (Model.HasCompanyRole)
+        @if (Model.HasManagementRole)
         {
             <div class="col">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body text-center">
                         <i class="bi bi-building fs-1 text-primary mb-3"></i>
-                        <h5 class="card-title">Company User</h5>
-                        <p class="card-text">Manage company settings, invite users, and oversee operations.</p>
+                        <h5 class="card-title">Management User</h5>
+                        <p class="card-text">Manage organization settings, invite users, and oversee operations.</p>
                     </div>
                     <div class="card-footer bg-transparent border-0 text-center pb-3">
                         <form method="post" asp-page-handler="SelectRole">
-                            <input type="hidden" name="role" value="Company" />
-                            <button type="submit" class="btn btn-primary">Go to Company</button>
+                            <input type="hidden" name="role" value="Management" />
+                            <button type="submit" class="btn btn-primary">Go to Management</button>
                         </form>
                     </div>
                 </div>

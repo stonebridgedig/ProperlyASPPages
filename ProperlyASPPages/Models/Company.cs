@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Properly.Models;
 
-public class CompanyOrg
+public class ManagementOrg
 {
     [Key]
-    public int? CompanyOrgId { get; set; }
+    public int? ManagementOrgId { get; set; }
     public string? Name { get; set; }
     public string? LegalName { get; set; }
     public string? TaxId { get; set; }
@@ -30,11 +30,11 @@ public class CompanyOrg
     public byte[]? RowVersion { get; set; }
 }
 
-public class CompanyUser
+public class ManagementUser
 {
     [Key]
-    public int? CompanyUserId { get; set; }
-    public int? CompanyOrgId { get; set; }
+    public int? ManagementUserId { get; set; }
+    public int? ManagementOrgId { get; set; }
 
     public string? IdentityUserId { get; set; }
     public string? FullName { get; set; }

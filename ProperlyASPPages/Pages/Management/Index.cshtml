@@ -1,0 +1,152 @@
+@page
+@model Management.ManagementIndexModel
+@{
+    ViewData["Title"] = "Management Dashboard";
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2">Management Dashboard</h1>
+            @if (Model.CurrentUser != null)
+            {
+                <p class="text-muted">Welcome, @Model.CurrentUser.FullName</p>
+            }
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-page="/Management/InviteUser" class="btn btn-primary">
+                <i class="bi bi-envelope-plus"></i> Invite User
+            </a>
+        </div>
+    </div>
+
+    @if (Model.CurrentUser == null)
+    {
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">No Management Organization</h4>
+            <p>You are not currently associated with a management organization.</p>
+            <hr>
+            <p class="mb-0">
+                <a asp-page="/Onboarding/ManagementSetup" class="btn btn-primary">Create or Join Management</a>
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <!-- Pending Invitations Card -->
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Pending Invitations</h5>
+                        <h2 class="display-4">@Model.PendingInvitations</h2>
+                        <p class="text-muted">Users invited but not yet accepted</p>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <a asp-page="/Management/InviteUser" class="btn btn-sm btn-outline-primary w-100">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="col-md-8 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <a asp-page="/Management/InviteUser" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-envelope"></i> Invite Users
+                                </a>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <a href="#" class="btn btn-outline-secondary w-100">
+                                    <i class="bi bi-people"></i> Manage Team
+                                </a>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <a href="#" class="btn btn-outline-secondary w-100">
+                                    <i class="bi bi-gear"></i> Settings
+                                </a>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <a href="#" class="btn btn-outline-secondary w-100">
+                                    <i class="bi bi-graph-up"></i> Reports
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Invitations -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Recent Invitations</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.RecentInvitations.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Email</th>
+                                            <th>Full Name</th>
+                                            <th>Role</th>
+                                            <th>Status</th>
+                                            <th>Expires</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var invitation in Model.RecentInvitations)
+                                        {
+                                            <tr>
+                                                <td>@invitation.Email</td>
+                                                <td>@(invitation.InvitedFullName ?? "-")</td>
+                                                <td>@invitation.Role</td>
+                                                <td>
+                                                    <span class="badge bg-warning text-dark">
+                                                        @invitation.Status.ToString()
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <small>@invitation.ExpiresAt?.ToString("MMM dd, yyyy")</small>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted text-center mb-0">No recent invitations</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+    </style>
+}

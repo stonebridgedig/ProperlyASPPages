@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ProperlyASPPages.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 
 <body>
@@ -58,16 +59,16 @@
                                 <a class="nav-link text-dark" asp-area="" asp-page="/Dashboard">Role</a>
                             </li>
 
-                            @if (currentRole == Properly.Models.DomainUserType.Company)
+                            @if (currentRole == Properly.Models.DomainUserType.Management)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Company/Dashboard">Dashboard</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-page="/Management/Dashboard">Dashboard</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Company/Manager1">Manager1</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-page="/Management/Manager1">Manager1</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Company/Manager2">Manager2</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-page="/Management/Manager2">Manager2</a>
                                 </li>
                             }
                             else if (currentRole == Properly.Models.DomainUserType.Owner)

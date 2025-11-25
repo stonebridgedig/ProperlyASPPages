@@ -17,8 +17,8 @@
         <div class="col-md-3">
             <div class="card bg-primary text-white">
                 <div class="card-body">
-                    <h5 class="card-title">Companies</h5>
-                    <h2 class="mb-0">@Model.Stats.ActiveCompanies / @Model.Stats.TotalCompanies</h2>
+                    <h5 class="card-title">Management Organizations</h5>
+                    <h2 class="mb-0">@Model.Stats.ActiveManagements / @Model.Stats.TotalManagements</h2>
                     <small>Active / Total</small>
                 </div>
             </div>
@@ -80,8 +80,8 @@
                         @if (Model.CurrentAdmin.Role.CanManageCompanies || Model.CurrentAdmin.IsSuperAdmin)
                         {
                             <div class="col-md-3 mb-3">
-                                <a asp-page="/Admin/Companies/Index" class="btn btn-outline-primary w-100">
-                                    <i class="bi bi-building"></i> Manage Companies
+                                <a asp-page="/Admin/Management/Index" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-building"></i> Manage Management
                                 </a>
                             </div>
                         }
