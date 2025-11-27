@@ -1,55 +1,61 @@
 @page
 @model Management.DashboardModel
 @{
-    Layout = null;
-    var importMap = """
-{
-  "imports": {
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.6",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0"
-  }
+    ViewData["Title"] = "Management Dashboard";
 }
-""";
-}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Management Dashboard - Properly</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-      }
-    </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-      :root {
-        color-scheme: light;
-      }
-      body {
-        font-family: 'Inter', sans-serif;
-      }
-      /* Ensure inputs are light even with autofill */
-      input:-webkit-autofill,
-      input:-webkit-autofill:hover, 
-      input:-webkit-autofill:focus, 
-      input:-webkit-autofill:active{
-          -webkit-box-shadow: 0 0 0 30px white inset !important;
-          -webkit-text-fill-color: #0f172a !important;
-      }
-    </style>
 
-    <script type="importmap">
-    @Html.Raw(importMap)
-    </script>
-    <script type="module" crossorigin src="~/management/assets/index-CUQvvD2l.js" asp-append-version="true"></script>
-</head>
-<body class="bg-white text-slate-800 antialiased">
-    <div id="root"></div>
-</body>
-</html>
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="h2">Management Dashboard</h1>
+        <p class="text-muted">Manage your organization operations and team</p>
+    </div>
+</div>
+
+@if (Model.ManagementUserInfo?.ManagementOrgId != null)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Welcome, @Model.ManagementUserInfo.FullName</h5>
+                    <p class="card-text">
+                        You are logged in as a Management User for @Model.ManagementUserInfo.ManagementOrgId.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Management Settings</h5>
+                </div>
+                <div class="card-body">
+                    <p>Manage organization information, policies, and configurations.</p>
+                    <a asp-page="/Management/Index" class="btn btn-primary btn-sm">Go to Settings</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Team Members</h5>
+                </div>
+                <div class="card-body">
+                    <p>Invite users, manage permissions, and oversee your team.</p>
+                    <a href="#" class="btn btn-primary btn-sm">Manage Team</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">
+        <p>Management organization information not found. Please complete your setup.</p>
+        <a asp-page="/Management/Index" class="btn btn-primary">Complete Setup</a>
+    </div>
+}
