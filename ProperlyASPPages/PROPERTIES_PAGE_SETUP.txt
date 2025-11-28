@@ -1,0 +1,84 @@
+# Properties Page with AG Grid
+
+## What Was Created
+
+### 1. Backend Components
+
+#### Repository Layer
+- **IPropertyRepository.cs** - Interface defining property data operations
+- **PropertyRepository.cs** - Dapper-based implementation for SQL Server
+
+#### API Controller
+- **PropertiesController.cs** - REST API endpoints:
+  - `GET /api/properties` - Get all properties for current management org
+  - `GET /api/properties/{id}` - Get specific property
+  - `POST /api/properties` - Create new property
+  - `PUT /api/properties/{id}` - Update property
+  - `DELETE /api/properties/{id}` - Delete property
+
+### 2. Frontend Components
+
+#### Razor Page
+- **Properties.cshtml** - Main properties page with AG Grid data table
+- **Properties.cshtml.cs** - Page model (minimal, data loaded via API)
+
+### 3. Features Implemented
+
+#### AG Grid Community Edition (MIT License)
+- ? Sortable columns
+- ? Filterable columns (text, number, set filters)
+- ? Resizable columns
+- ? Pagination (10, 20, 50, 100 rows per page)
+- ? Status badges with color coding
+- ? Action buttons (Edit, Delete)
+- ? Responsive design
+
+#### Data Table Columns
+1. **ID** - Property ID (number filter)
+2. **Name** - Property name (text filter)
+3. **Type** - Property type (text filter)
+4. **Address** - Street address (text filter)
+5. **City** - City (text filter)
+6. **State** - State (text filter)
+7. **Zip** - Postal code
+8. **Units** - Number of units (number filter)
+9. **Sq Ft** - Square footage with comma formatting (number filter)
+10. **Status** - Color-coded status badge (set filter)
+11. **Actions** - Edit and Delete buttons (pinned right)
+
+#### Status Values
+- **Active** (Green) - Property is operational
+- **Inactive** (Red) - Property not in use
+- **Under Renovation** (Yellow) - Under construction/renovation
+- **Planned** (Blue) - Planned but not yet built
+- **Sold** (Gray) - Property has been sold
+
+## How It Works
+
+1. **Page Load**: When `/Management/Properties` loads, AG Grid initializes
+2. **Data Fetch**: Grid calls `/api/properties` endpoint
+3. **Authorization**: API verifies user is part of management org
+4. **Filter Data**: Only properties for user's management org are returned
+5. **Display**: AG Grid renders data with sorting, filtering, pagination
+
+## Database Connection
+
+Uses existing `ProperlyDataDB` connection string with the `Property` table.
+
+## Next Steps (Optional)
+
+- Add property form/modal for creating/editing
+- Add property details view
+- Add bulk operations
+- Add export to Excel/CSV functionality
+- Add advanced filters (date ranges, multi-select)
+- Add property images/photos
+
+## Testing
+
+1. Navigate to `/Management` dashboard
+2. Click "Properties" card
+3. Properties page should load with AG Grid
+4. Try sorting, filtering, and pagination
+5. Delete functionality works (with confirmation)
+6. Edit/Add buttons show alerts (ready for implementation)

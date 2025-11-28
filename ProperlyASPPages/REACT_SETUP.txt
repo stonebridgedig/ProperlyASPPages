@@ -1,0 +1,72 @@
+# React Setup Instructions
+
+This project now includes React integration for interactive UI components.
+
+## Getting Started
+
+### 1. Install Node.js Dependencies
+
+```bash
+cd ProperlyASPPages
+npm install
+```
+
+### 2. Build React Components
+
+For production build:
+```bash
+npm run build
+```
+
+For development build with watch mode:
+```bash
+npm run dev
+```
+
+For development build (one-time):
+```bash
+npm run build:dev
+```
+
+### 3. Run the Application
+
+Run the ASP.NET Core application as usual. The React components will be loaded automatically on pages that include them.
+
+## Project Structure
+
+```
+ProperlyASPPages/
+??? wwwroot/
+?   ??? src/                    # React source files
+?   ?   ??? management/
+?   ?       ??? components/
+?   ?       ?   ??? ManagementDashboard.tsx
+?   ?       ??? index.tsx
+?   ??? dist/                   # Built bundles (generated, gitignored)
+?       ??? management.bundle.js
+??? package.json                # Node.js dependencies
+??? tsconfig.json              # TypeScript configuration
+??? webpack.config.js          # Webpack build configuration
+```
+
+## Adding React to a Page
+
+1. Create your React component in `wwwroot/src/[page-name]/components/`
+2. Create an entry point in `wwwroot/src/[page-name]/index.tsx`
+3. Add the entry to `webpack.config.js`
+4. In your Razor page, add:
+   - A root element: `<div id="your-component-root"></div>`
+   - Pass data via JSON: `<script id="your-data" type="application/json">@Html.Raw(...)</script>`
+   - Reference the bundle: `<script src="~/dist/your-bundle.js"></script>`
+
+## Technologies
+
+- **React**: 18.2.0
+- **TypeScript**: 5.3.3
+- **Webpack**: 5.89.0
+
+## Development Workflow
+
+1. Make changes to React components in `wwwroot/src/`
+2. Run `npm run dev` to watch for changes
+3. Refresh your browser to see updates

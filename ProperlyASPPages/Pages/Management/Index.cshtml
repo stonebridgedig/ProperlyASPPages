@@ -5,148 +5,345 @@
 }
 
 <div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h1 class="h2">Management Dashboard</h1>
-            @if (Model.CurrentUser != null)
-            {
-                <p class="text-muted">Welcome, @Model.CurrentUser.FullName</p>
-            }
-        </div>
-        <div class="col-md-4 text-end">
-            <a asp-page="/Management/InviteUser" class="btn btn-primary">
-                <i class="bi bi-envelope-plus"></i> Invite User
-            </a>
-        </div>
-    </div>
-
-    @if (Model.CurrentUser == null)
-    {
-        <div class="alert alert-warning" role="alert">
-            <h4 class="alert-heading">No Management Organization</h4>
-            <p>You are not currently associated with a management organization.</p>
-            <hr>
-            <p class="mb-0">
-                <a asp-page="/Onboarding/ManagementSetup" class="btn btn-primary">Create or Join Management</a>
-            </p>
-        </div>
-    }
-    else
-    {
-        <div class="row">
-            <!-- Pending Invitations Card -->
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Pending Invitations</h5>
-                        <h2 class="display-4">@Model.PendingInvitations</h2>
-                        <p class="text-muted">Users invited but not yet accepted</p>
-                    </div>
-                    <div class="card-footer bg-white">
-                        <a asp-page="/Management/InviteUser" class="btn btn-sm btn-outline-primary w-100">
-                            View Details
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="col-md-8 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Quick Actions</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <a asp-page="/Management/InviteUser" class="btn btn-outline-primary w-100">
-                                    <i class="bi bi-envelope"></i> Invite Users
-                                </a>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <a href="#" class="btn btn-outline-secondary w-100">
-                                    <i class="bi bi-people"></i> Manage Team
-                                </a>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <a href="#" class="btn btn-outline-secondary w-100">
-                                    <i class="bi bi-gear"></i> Settings
-                                </a>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <a href="#" class="btn btn-outline-secondary w-100">
-                                    <i class="bi bi-graph-up"></i> Reports
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Invitations -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Recent Invitations</h5>
-                    </div>
-                    <div class="card-body">
-                        @if (Model.RecentInvitations.Any())
-                        {
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Email</th>
-                                            <th>Full Name</th>
-                                            <th>Role</th>
-                                            <th>Status</th>
-                                            <th>Expires</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var invitation in Model.RecentInvitations)
-                                        {
-                                            <tr>
-                                                <td>@invitation.Email</td>
-                                                <td>@(invitation.InvitedFullName ?? "-")</td>
-                                                <td>@invitation.Role</td>
-                                                <td>
-                                                    <span class="badge bg-warning text-dark">
-                                                        @invitation.Status.ToString()
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <small>@invitation.ExpiresAt?.ToString("MMM dd, yyyy")</small>
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        }
-                        else
-                        {
-                            <p class="text-muted text-center mb-0">No recent invitations</p>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
+    <div id="management-dashboard-root"></div>
 </div>
 
 @section Styles {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.0.0/styles/ag-grid.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.0.0/styles/ag-theme-alpine.css">
     <style>
         .card {
             border: none;
             box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
         }
         .card-header {
             background-color: #f8f9fa;
             border-bottom: 1px solid #dee2e6;
         }
+        .dashboard-card {
+            cursor: pointer;
+            height: 100%;
+        }
+        .dashboard-card .card-body {
+            padding: 2rem;
+            text-align: center;
+        }
+        .dashboard-card .icon-container {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .dashboard-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .dashboard-card p {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+        .breadcrumb {
+            background-color: transparent;
+            padding: 0;
+            margin-bottom: 1rem;
+        }
+        .breadcrumb-item a {
+            color: #0d6efd;
+            text-decoration: none;
+        }
+        .breadcrumb-item a:hover {
+            text-decoration: underline;
+        }
+        .ag-theme-alpine {
+            --ag-header-background-color: #f8f9fa;
+            --ag-odd-row-background-color: #ffffff;
+            --ag-border-color: #dee2e6;
+        }
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .status-active { background-color: #d4edda; color: #155724; }
+        .status-inactive { background-color: #f8d7da; color: #721c24; }
+        .status-renovation { background-color: #fff3cd; color: #856404; }
+        .status-planned { background-color: #d1ecf1; color: #0c5460; }
+        .status-sold { background-color: #e2e3e5; color: #383d41; }
     </style>
+}
+
+@section Scripts {
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.0.0/dist/ag-grid-community.min.js"></script>
+    
+    <script>
+        const { createElement: e, useState } = React;
+        
+        // Properties Component with AG Grid
+        const PropertiesView = () => {
+            const [gridApi, setGridApi] = useState(null);
+
+            const statusMap = {
+                0: { text: 'Active', class: 'status-active' },
+                1: { text: 'Inactive', class: 'status-inactive' },
+                2: { text: 'Under Renovation', class: 'status-renovation' },
+                3: { text: 'Planned', class: 'status-planned' },
+                4: { text: 'Sold', class: 'status-sold' }
+            };
+
+            const statusCellRenderer = (params) => {
+                if (params.value == null) return '';
+                const status = statusMap[params.value] || { text: 'Unknown', class: '' };
+                return `<span class="status-badge ${status.class}">${status.text}</span>`;
+            };
+
+            const actionsCellRenderer = (params) => {
+                return `
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="window.editProperty(${params.data.propertyId})">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="window.deleteProperty(${params.data.propertyId})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                `;
+            };
+
+            const columnDefs = [
+                { field: 'propertyId', headerName: 'ID', width: 80, filter: 'agNumberColumnFilter' },
+                { field: 'name', headerName: 'Name', width: 200, filter: 'agTextColumnFilter' },
+                { field: 'type', headerName: 'Type', width: 120, filter: 'agTextColumnFilter' },
+                { field: 'address', headerName: 'Address', width: 250, filter: 'agTextColumnFilter' },
+                { field: 'city', headerName: 'City', width: 150, filter: 'agTextColumnFilter' },
+                { field: 'state', headerName: 'State', width: 100, filter: 'agTextColumnFilter' },
+                { field: 'postalCode', headerName: 'Zip', width: 100 },
+                { field: 'unitsCount', headerName: 'Units', width: 100, filter: 'agNumberColumnFilter' },
+                { field: 'squareFeet', headerName: 'Sq Ft', width: 120, filter: 'agNumberColumnFilter',
+                  valueFormatter: params => params.value ? params.value.toLocaleString() : '' },
+                { field: 'status', headerName: 'Status', width: 150, cellRenderer: statusCellRenderer,
+                  filter: 'agSetColumnFilter' },
+                { headerName: 'Actions', width: 120, cellRenderer: actionsCellRenderer, 
+                  sortable: false, filter: false, pinned: 'right' }
+            ];
+
+            const gridOptions = {
+                columnDefs: columnDefs,
+                defaultColDef: {
+                    sortable: true,
+                    filter: true,
+                    resizable: true
+                },
+                pagination: true,
+                paginationPageSize: 20,
+                paginationPageSizeSelector: [10, 20, 50, 100],
+                domLayout: 'normal',
+                rowSelection: 'single',
+                onGridReady: (params) => {
+                    setGridApi(params.api);
+                    loadProperties(params.api);
+                }
+            };
+
+            const loadProperties = async (api) => {
+                try {
+                    const response = await fetch('/api/properties');
+                    if (!response.ok) throw new Error('Failed to load properties');
+                    const properties = await response.json();
+                    api.setGridOption('rowData', properties);
+                } catch (error) {
+                    console.error('Error loading properties:', error);
+                    alert('Failed to load properties. Please try again.');
+                }
+            };
+
+            React.useEffect(() => {
+                const gridDiv = document.querySelector('#properties-grid');
+                if (gridDiv && !gridApi) {
+                    agGrid.createGrid(gridDiv, gridOptions);
+                }
+            }, []);
+
+            window.editProperty = (id) => {
+                alert(`Edit property ${id} - functionality coming soon!`);
+            };
+
+            window.deleteProperty = async (id) => {
+                if (!confirm('Are you sure you want to delete this property?')) return;
+                try {
+                    const response = await fetch(`/api/properties/${id}`, { method: 'DELETE' });
+                    if (!response.ok) throw new Error('Failed to delete property');
+                    if (gridApi) loadProperties(gridApi);
+                    alert('Property deleted successfully');
+                } catch (error) {
+                    console.error('Error deleting property:', error);
+                    alert('Failed to delete property. Please try again.');
+                }
+            };
+
+            return e('div', null,
+                e('div', { className: 'd-flex justify-content-between align-items-center mb-4' },
+                    e('h2', null, 'Properties'),
+                    e('button', { 
+                        className: 'btn btn-primary',
+                        onClick: () => alert('Add property functionality coming soon!')
+                    },
+                        e('i', { className: 'bi bi-plus-circle me-2' }),
+                        'Add Property'
+                    )
+                ),
+                e('div', { id: 'properties-grid', className: 'ag-theme-alpine', style: { height: '600px', width: '100%' } })
+            );
+        };
+
+        // Dashboard Cards View
+        const DashboardView = ({ onNavigate }) => {
+            const cards = [
+                {
+                    id: 'properties',
+                    title: 'Properties',
+                    icon: 'bi-building',
+                    iconColor: '#0d6efd',
+                    description: 'Manage properties and units'
+                },
+                {
+                    id: 'financials',
+                    title: 'Financials',
+                    icon: 'bi-cash-coin',
+                    iconColor: '#198754',
+                    description: 'Track income and expenses'
+                },
+                {
+                    id: 'people',
+                    title: 'People',
+                    icon: 'bi-people',
+                    iconColor: '#6f42c1',
+                    description: 'Manage tenants and owners'
+                },
+                {
+                    id: 'service',
+                    title: 'Service',
+                    icon: 'bi-tools',
+                    iconColor: '#fd7e14',
+                    description: 'Maintenance and service requests'
+                }
+            ];
+
+            return e('div', { className: 'row g-4' },
+                cards.map(card =>
+                    e('div', { key: card.id, className: 'col-md-6 col-lg-3' },
+                        e('div', { 
+                            className: 'card dashboard-card',
+                            onClick: () => onNavigate(card.id)
+                        },
+                            e('div', { className: 'card-body' },
+                                e('div', { 
+                                    className: 'icon-container',
+                                    style: { color: card.iconColor }
+                                },
+                                    e('i', { className: `bi ${card.icon}` })
+                                ),
+                                e('h3', null, card.title),
+                                e('p', null, card.description)
+                            )
+                        )
+                    )
+                )
+            );
+        };
+
+        // Placeholder views for other sections
+        const FinancialsView = () => {
+            return e('div', null,
+                e('h2', null, 'Financials'),
+                e('p', { className: 'text-muted' }, 'Financial management features coming soon...')
+            );
+        };
+
+        const PeopleView = () => {
+            return e('div', null,
+                e('h2', null, 'People'),
+                e('p', { className: 'text-muted' }, 'People management features coming soon...')
+            );
+        };
+
+        const ServiceView = () => {
+            return e('div', null,
+                e('h2', null, 'Service'),
+                e('p', { className: 'text-muted' }, 'Service request features coming soon...')
+            );
+        };
+
+        // Main App Component
+        const ManagementApp = ({ data }) => {
+            const [currentView, setCurrentView] = useState('dashboard');
+
+            const viewTitles = {
+                dashboard: 'Dashboard',
+                properties: 'Properties',
+                financials: 'Financials',
+                people: 'People',
+                service: 'Service'
+            };
+
+            const renderView = () => {
+                switch (currentView) {
+                    case 'properties':
+                        return e(PropertiesView);
+                    case 'financials':
+                        return e(FinancialsView);
+                    case 'people':
+                        return e(PeopleView);
+                    case 'service':
+                        return e(ServiceView);
+                    default:
+                        return e(DashboardView, { onNavigate: setCurrentView });
+                }
+            };
+
+            return e('div', null,
+                currentView !== 'dashboard' && e('nav', { 'aria-label': 'breadcrumb' },
+                    e('ol', { className: 'breadcrumb' },
+                        e('li', { className: 'breadcrumb-item' },
+                            e('a', { 
+                                href: '#',
+                                onClick: (ev) => { ev.preventDefault(); setCurrentView('dashboard'); }
+                            }, 'Dashboard')
+                        ),
+                        e('li', { className: 'breadcrumb-item active', 'aria-current': 'page' },
+                            viewTitles[currentView]
+                        )
+                    )
+                ),
+                renderView()
+            );
+        };
+
+        const data = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(new
+        {
+            currentUser = Model.CurrentUser != null ? new
+            {
+                id = Model.CurrentUser.ManagementUserId,
+                name = Model.CurrentUser.FullName,
+                email = Model.CurrentUser.Email,
+                managementOrgId = Model.CurrentUser.ManagementOrgId
+            } : null,
+            pendingInvitations = Model.PendingInvitations,
+            recentInvitations = Model.RecentInvitations.Select(inv => new
+            {
+                id = inv.InvitationId,
+                email = inv.Email,
+                role = inv.Role,
+                invitedDate = inv.CreatedAt
+            }).ToList()
+        }));
+
+        const root = ReactDOM.createRoot(document.getElementById('management-dashboard-root'));
+        root.render(e(ManagementApp, { data: data }));
+    </script>
 }

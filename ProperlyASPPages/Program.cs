@@ -33,6 +33,7 @@ builder.Services.AddSession(options =>
 // Repositories
 builder.Services.AddScoped<IManagementRepository, ManagementRepository>();
 builder.Services.AddScoped<ISystemAdminRepository, SystemAdminRepository>();
+builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
 
 // Services
 builder.Services.AddScoped<IOnboardingService, OnboardingService>();

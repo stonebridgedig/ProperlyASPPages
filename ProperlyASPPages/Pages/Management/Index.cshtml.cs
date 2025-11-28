@@ -2,22 +2,22 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Properly.Models;
-using ProperlyASPPages.Services;
+using ProperlyASPPages.Repositories;
 
 namespace ProperlyASPPages.Pages.Management;
 
 [Authorize]
 public class ManagementIndexModel : PageModel
 {
-    private readonly IOnboardingService _onboardingService;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IManagementRepository _managementRepository;
 
     public ManagementIndexModel(
-        IOnboardingService onboardingService,
-        UserManager<ApplicationUser> userManager)
+        UserManager<ApplicationUser> userManager,
+        IManagementRepository managementRepository)
     {
-        _onboardingService = onboardingService;
         _userManager = userManager;
+        _managementRepository = managementRepository;
     }
 
     public ManagementUser? CurrentUser { get; set; }
@@ -26,28 +26,17 @@ public class ManagementIndexModel : PageModel
 
     public async Task OnGetAsync()
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-        {
+        var identityUser = await _userManager.GetUserAsync(User);
+        if (identityUser == null)
             return;
-        }
 
-        // Get current management user
-        CurrentUser = await _onboardingService.GetManagementUserByIdentityUserIdAsync(user.Id);
+        CurrentUser = await _managementRepository.GetManagementUserByIdentityUserIdAsync(identityUser.Id);
         
-        if (CurrentUser?.ManagementOrgId != null)
+        if (CurrentUser?.ManagementOrgId.HasValue == true)
         {
-            var managementId = CurrentUser.ManagementOrgId.Value;
-
-            // Get pending invitations
-            var allInvitations = await _onboardingService.GetPendingInvitationsForManagementAsync(managementId);
-            PendingInvitations = allInvitations.Count(i => !i.AcceptedAt.HasValue && i.ExpiresAt > DateTime.UtcNow);
-
-            // Get recent invitations for display
-            RecentInvitations = allInvitations
-                .OrderByDescending(i => i.CreatedAt)
-                .Take(5)
-                .ToList();
+            var allInvitations = await _managementRepository.GetPendingInvitationsByManagementAsync(CurrentUser.ManagementOrgId.Value);
+            PendingInvitations = allInvitations.Count;
+            RecentInvitations = allInvitations.Take(10).ToList();
         }
     }
 }

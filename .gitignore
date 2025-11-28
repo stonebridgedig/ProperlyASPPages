@@ -285,6 +285,10 @@ FakesAssemblies/
 .ntvs_analysis.dat
 node_modules/
 
+# React/Webpack build output
+wwwroot/dist/
+package-lock.json
+
 # Visual Studio 6 build log
 *.plg
 

@@ -5,15 +5,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ProperlyASPPages</title>
-    <script type="importmap">
-        {
-            "imports": {
-                "react": "https://esm.sh/react@19.2.0",
-                "react-dom": "https://esm.sh/react-dom@19.2.0/client",
-                "react-router": "https://esm.sh/react-router@7.0.0"
-            }
-        }
-    </script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ProperlyASPPages.styles.css" asp-append-version="true" />
@@ -62,49 +53,25 @@
                             @if (currentRole == Properly.Models.DomainUserType.Management)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Management/Dashboard">Dashboard</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Management/Manager1">Manager1</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Management/Manager2">Manager2</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-page="/Management/Index">Dashboard</a>
                                 </li>
                             }
                             else if (currentRole == Properly.Models.DomainUserType.Owner)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Owner/Dashboard">Dashboard</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Owner/Owner1">Owner1</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Owner/Owner2">Owner2</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-page="/Owner/Index">Dashboard</a>
                                 </li>
                             }
                             else if (currentRole == Properly.Models.DomainUserType.Tenant)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Tenant/Dashboard">Dashboard</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Tenant/Tenant1">Tenant1</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Tenant/Tenant2">Tenant2</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-page="/Tenant/Index">Dashboard</a>
                                 </li>
                             }
                             else if (currentRole == Properly.Models.DomainUserType.Service)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Service/Dashboard">Dashboard</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Service/Service1">Service1</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-page="/Service/Service2">Service2</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-page="/Service/Index">Dashboard</a>
                                 </li>
                             }
                         }

@@ -1,0 +1,74 @@
+# React CDN Setup
+
+This project uses React via CDN - no build tools or npm required!
+
+## How It Works
+
+The Management Dashboard page loads React directly from CDN:
+- React 18 (production build)
+- ReactDOM 18 (production build)  
+- **No Babel needed** - Uses React.createElement instead of JSX
+
+## Adding React to Other Pages
+
+Simply add to your .cshtml file:
+
+### 1. In the Scripts section, load React from CDN:
+
+```html
+@section Scripts {
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <script>
+        const { createElement: e } = React;
+        
+        // Your React component here
+        const MyComponent = ({ data }) => {
+            return e('div', null, 'Hello ', data.name);
+        };
+        
+        // Pass data from PageModel
+        const data = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.YourData));
+        
+        // Render
+        const root = ReactDOM.createRoot(document.getElementById('your-root-id'));
+        root.render(e(MyComponent, { data: data }));
+    </script>
+}
+```
+
+### 2. Add a root element in your page:
+
+```html
+<div id="your-root-id"></div>
+```
+
+## Benefits
+
+? No build process required
+? No npm install needed
+? No Babel needed
+? Quick and simple setup
+? Great for adding React to individual pages
+? Easy to understand and maintain
+
+## Using React.createElement
+
+Instead of JSX syntax like `<div className="card">Hello</div>`, we use:
+
+```javascript
+e('div', { className: 'card' }, 'Hello')
+```
+
+**Syntax:** `e(element, props, ...children)`
+
+Examples:
+- `e('div', null, 'Text')` ? `<div>Text</div>`
+- `e('div', { className: 'card' })` ? `<div class="card"></div>`
+- `e('button', { onClick: handleClick }, 'Click')` ? `<button>Click</button>`
+- `e('div', null, e('h1', null, 'Title'))` ? `<div><h1>Title</h1></div>`
+
+## Current React Pages
+
+- `/Management/Index` - Management Dashboard with four feature cards (Properties, Financials, People, Service)

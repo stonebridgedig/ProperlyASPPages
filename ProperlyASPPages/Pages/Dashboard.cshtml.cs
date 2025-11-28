@@ -53,13 +53,12 @@ namespace ProperlyASPPages.Pages
 
             _roleContextService.SetCurrentRole(domainType);
 
-            // Redirect to the appropriate role dashboard
             return role switch
             {
-                "Management" => RedirectToPage("/Management/Dashboard"),
-                "Owner" => RedirectToPage("/Owner/Dashboard"),
-                "Tenant" => RedirectToPage("/Tenant/Dashboard"),
-                "Service" => RedirectToPage("/Service/Dashboard"),
+                "Management" => RedirectToPage("/Management/Index"),
+                "Owner" => RedirectToPage("/Owner/Index"),
+                "Tenant" => RedirectToPage("/Tenant/Index"),
+                "Service" => RedirectToPage("/Service/Index"),
                 _ => RedirectToPage()
             };
         }

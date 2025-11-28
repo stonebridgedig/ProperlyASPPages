@@ -1,0 +1,157 @@
+@page
+@model ProperlyASPPages.Pages.Management.PropertiesModel
+@{
+    ViewData["Title"] = "Properties";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Properties</h2>
+        <button id="btn-add-property" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>
+            Add Property
+        </button>
+    </div>
+
+    <div id="properties-grid" class="ag-theme-alpine" style="height: 600px; width: 100%;"></div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.0.0/styles/ag-grid.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.0.0/styles/ag-theme-alpine.css">
+    <style>
+        .ag-theme-alpine {
+            --ag-header-background-color: #f8f9fa;
+            --ag-odd-row-background-color: #ffffff;
+            --ag-border-color: #dee2e6;
+        }
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .status-active { background-color: #d4edda; color: #155724; }
+        .status-inactive { background-color: #f8d7da; color: #721c24; }
+        .status-renovation { background-color: #fff3cd; color: #856404; }
+        .status-planned { background-color: #d1ecf1; color: #0c5460; }
+        .status-sold { background-color: #e2e3e5; color: #383d41; }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.0.0/dist/ag-grid-community.min.js"></script>
+    
+    <script>
+        const statusMap = {
+            0: { text: 'Active', class: 'status-active' },
+            1: { text: 'Inactive', class: 'status-inactive' },
+            2: { text: 'Under Renovation', class: 'status-renovation' },
+            3: { text: 'Planned', class: 'status-planned' },
+            4: { text: 'Sold', class: 'status-sold' }
+        };
+
+        function statusCellRenderer(params) {
+            if (params.value == null) return '';
+            const status = statusMap[params.value] || { text: 'Unknown', class: '' };
+            return `<span class="status-badge ${status.class}">${status.text}</span>`;
+        }
+
+        function actionsCellRenderer(params) {
+            return `
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="editProperty(${params.data.propertyId})">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteProperty(${params.data.propertyId})">
+                    <i class="bi bi-trash"></i>
+                </button>
+            `;
+        }
+
+        const columnDefs = [
+            { field: 'propertyId', headerName: 'ID', width: 80, filter: 'agNumberColumnFilter' },
+            { field: 'name', headerName: 'Name', width: 200, filter: 'agTextColumnFilter' },
+            { field: 'type', headerName: 'Type', width: 120, filter: 'agTextColumnFilter' },
+            { field: 'address', headerName: 'Address', width: 250, filter: 'agTextColumnFilter' },
+            { field: 'city', headerName: 'City', width: 150, filter: 'agTextColumnFilter' },
+            { field: 'state', headerName: 'State', width: 100, filter: 'agTextColumnFilter' },
+            { field: 'postalCode', headerName: 'Zip', width: 100 },
+            { field: 'unitsCount', headerName: 'Units', width: 100, filter: 'agNumberColumnFilter' },
+            { field: 'squareFeet', headerName: 'Sq Ft', width: 120, filter: 'agNumberColumnFilter',
+              valueFormatter: params => params.value ? params.value.toLocaleString() : '' },
+            { field: 'status', headerName: 'Status', width: 150, cellRenderer: statusCellRenderer,
+              filter: 'agSetColumnFilter' },
+            { headerName: 'Actions', width: 120, cellRenderer: actionsCellRenderer, 
+              sortable: false, filter: false, pinned: 'right' }
+        ];
+
+        const gridOptions = {
+            columnDefs: columnDefs,
+            defaultColDef: {
+                sortable: true,
+                filter: true,
+                resizable: true
+            },
+            pagination: true,
+            paginationPageSize: 20,
+            paginationPageSizeSelector: [10, 20, 50, 100],
+            domLayout: 'normal',
+            rowSelection: 'single',
+            onGridReady: loadProperties
+        };
+
+        let gridApi;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const gridDiv = document.querySelector('#properties-grid');
+            gridApi = agGrid.createGrid(gridDiv, gridOptions);
+
+            document.getElementById('btn-add-property').addEventListener('click', addProperty);
+        });
+
+        async function loadProperties() {
+            try {
+                const response = await fetch('/api/properties');
+                if (!response.ok) {
+                    throw new Error('Failed to load properties');
+                }
+                const properties = await response.json();
+                gridApi.setGridOption('rowData', properties);
+            } catch (error) {
+                console.error('Error loading properties:', error);
+                alert('Failed to load properties. Please try again.');
+            }
+        }
+
+        function addProperty() {
+            alert('Add property functionality coming soon!');
+        }
+
+        function editProperty(id) {
+            alert(`Edit property ${id} - functionality coming soon!`);
+        }
+
+        async function deleteProperty(id) {
+            if (!confirm('Are you sure you want to delete this property?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/properties/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete property');
+                }
+
+                await loadProperties();
+                alert('Property deleted successfully');
+            } catch (error) {
+                console.error('Error deleting property:', error);
+                alert('Failed to delete property. Please try again.');
+            }
+        }
+    </script>
+}
