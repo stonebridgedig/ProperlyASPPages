@@ -8,6 +8,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Pages\Api\**" />
+    <Compile Remove="Pages\Company\**" />
+    <Compile Remove="src\**" />
+    <Content Remove="Pages\Api\**" />
+    <Content Remove="Pages\Company\**" />
+    <Content Remove="src\**" />
+    <EmbeddedResource Remove="Pages\Api\**" />
+    <EmbeddedResource Remove="Pages\Company\**" />
+    <EmbeddedResource Remove="src\**" />
+    <None Remove="Pages\Api\**" />
+    <None Remove="Pages\Company\**" />
+    <None Remove="src\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.0" />
@@ -20,12 +35,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Pages\Api\" />
-    <Folder Include="Pages\Company\" />
-    <Folder Include="src\pages\Company\" />
   </ItemGroup>
 
 </Project>

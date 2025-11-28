@@ -1,0 +1,4 @@
+
+To run Ract app, open a command prompt and run:
+npm install
+npm run dev
