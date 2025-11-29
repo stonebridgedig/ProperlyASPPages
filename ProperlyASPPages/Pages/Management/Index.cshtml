@@ -9,9 +9,9 @@
 </div>
 
 @section Styles {
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.0.0/styles/ag-grid.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.0.0/styles/ag-theme-alpine.css">
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/lib/ag-grid/styles/ag-grid.css">
+    <link rel="stylesheet" href="~/lib/ag-grid/styles/ag-theme-alpine.css">
     <style>
         .card {
             border: none;
@@ -75,46 +75,241 @@
         .status-renovation { background-color: #fff3cd; color: #856404; }
         .status-planned { background-color: #d1ecf1; color: #0c5460; }
         .status-sold { background-color: #e2e3e5; color: #383d41; }
+        .view { display: none; }
+        .view.active { display: block; }
     </style>
 }
 
 @section Scripts {
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.0.0/dist/ag-grid-community.min.js"></script>
+    <script src="~/lib/ag-grid/dist/ag-grid-community.min.js"></script>
     
     <script>
-        const { createElement: e, useState } = React;
-        
-        // Properties Component with AG Grid
-        const PropertiesView = () => {
-            const [gridApi, setGridApi] = useState(null);
+        const data = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(new
+        {
+            currentUser = Model.CurrentUser != null ? new
+            {
+                id = Model.CurrentUser.ManagementUserId,
+                name = Model.CurrentUser.FullName,
+                email = Model.CurrentUser.Email,
+                managementOrgId = Model.CurrentUser.ManagementOrgId
+            } : null,
+            pendingInvitations = Model.PendingInvitations,
+            recentInvitations = Model.RecentInvitations.Select(inv => new
+            {
+                id = inv.InvitationId,
+                email = inv.Email,
+                role = inv.Role,
+                invitedDate = inv.CreatedAt
+            }).ToList()
+        }));
 
-            const statusMap = {
-                0: { text: 'Active', class: 'status-active' },
-                1: { text: 'Inactive', class: 'status-inactive' },
-                2: { text: 'Under Renovation', class: 'status-renovation' },
-                3: { text: 'Planned', class: 'status-planned' },
-                4: { text: 'Sold', class: 'status-sold' }
-            };
+        let currentView = 'dashboard';
+        let gridApi = null;
 
-            const statusCellRenderer = (params) => {
-                if (params.value == null) return '';
-                const status = statusMap[params.value] || { text: 'Unknown', class: '' };
-                return `<span class="status-badge ${status.class}">${status.text}</span>`;
-            };
+        const statusMap = {
+            0: { text: 'Active', class: 'status-active' },
+            1: { text: 'Inactive', class: 'status-inactive' },
+            2: { text: 'Under Renovation', class: 'status-renovation' },
+            3: { text: 'Planned', class: 'status-planned' },
+            4: { text: 'Sold', class: 'status-sold' }
+        };
 
-            const actionsCellRenderer = (params) => {
-                return `
-                    <button class="btn btn-sm btn-outline-primary me-1" onclick="window.editProperty(${params.data.propertyId})">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="window.deleteProperty(${params.data.propertyId})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                `;
-            };
+        function navigateToView(viewName) {
+            currentView = viewName;
+            renderApp();
+        }
 
+        function renderApp() {
+            const root = document.getElementById('management-dashboard-root');
+            root.innerHTML = '';
+
+            if (currentView !== 'dashboard') {
+                root.appendChild(createBreadcrumb());
+            }
+
+            const viewContainer = document.createElement('div');
+            viewContainer.id = 'view-container';
+
+            switch (currentView) {
+                case 'properties':
+                    viewContainer.appendChild(createPropertiesView());
+                    break;
+                case 'financials':
+                    viewContainer.appendChild(createFinancialsView());
+                    break;
+                case 'people':
+                    viewContainer.appendChild(createPeopleView());
+                    break;
+                case 'service':
+                    viewContainer.appendChild(createServiceView());
+                    break;
+                default:
+                    viewContainer.appendChild(createDashboardView());
+            }
+
+            root.appendChild(viewContainer);
+
+            if (currentView === 'properties') {
+                initializeGrid();
+            }
+        }
+
+        function createBreadcrumb() {
+            const nav = document.createElement('nav');
+            nav.setAttribute('aria-label', 'breadcrumb');
+
+            const ol = document.createElement('ol');
+            ol.className = 'breadcrumb';
+
+            const li1 = document.createElement('li');
+            li1.className = 'breadcrumb-item';
+            const a = document.createElement('a');
+            a.href = '#';
+            a.textContent = 'Dashboard';
+            a.onclick = (e) => { e.preventDefault(); navigateToView('dashboard'); };
+            li1.appendChild(a);
+
+            const li2 = document.createElement('li');
+            li2.className = 'breadcrumb-item active';
+            li2.setAttribute('aria-current', 'page');
+            li2.textContent = currentView.charAt(0).toUpperCase() + currentView.slice(1);
+
+            ol.appendChild(li1);
+            ol.appendChild(li2);
+            nav.appendChild(ol);
+
+            return nav;
+        }
+
+        function createDashboardView() {
+            const cards = [
+                { id: 'properties', title: 'Properties', icon: 'bi-building', iconColor: '#0d6efd', description: 'Manage properties and units' },
+                { id: 'financials', title: 'Financials', icon: 'bi-cash-coin', iconColor: '#198754', description: 'Track income and expenses' },
+                { id: 'people', title: 'People', icon: 'bi-people', iconColor: '#6f42c1', description: 'Manage tenants and owners' },
+                { id: 'service', title: 'Service', icon: 'bi-tools', iconColor: '#fd7e14', description: 'Maintenance and service requests' }
+            ];
+
+            const row = document.createElement('div');
+            row.className = 'row g-4';
+
+            cards.forEach(card => {
+                const col = document.createElement('div');
+                col.className = 'col-md-6 col-lg-3';
+
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'card dashboard-card';
+                cardDiv.onclick = () => navigateToView(card.id);
+
+                const cardBody = document.createElement('div');
+                cardBody.className = 'card-body';
+
+                const iconContainer = document.createElement('div');
+                iconContainer.className = 'icon-container';
+                iconContainer.style.color = card.iconColor;
+                const icon = document.createElement('i');
+                icon.className = `bi ${card.icon}`;
+                iconContainer.appendChild(icon);
+
+                const h3 = document.createElement('h3');
+                h3.textContent = card.title;
+
+                const p = document.createElement('p');
+                p.textContent = card.description;
+
+                cardBody.appendChild(iconContainer);
+                cardBody.appendChild(h3);
+                cardBody.appendChild(p);
+                cardDiv.appendChild(cardBody);
+                col.appendChild(cardDiv);
+                row.appendChild(col);
+            });
+
+            return row;
+        }
+
+        function createPropertiesView() {
+            const container = document.createElement('div');
+
+            const header = document.createElement('div');
+            header.className = 'd-flex justify-content-between align-items-center mb-4';
+
+            const h2 = document.createElement('h2');
+            h2.textContent = 'Properties';
+
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-primary';
+            btn.onclick = () => alert('Add property functionality coming soon!');
+            btn.innerHTML = '<i class="bi bi-plus-circle me-2"></i>Add Property';
+
+            header.appendChild(h2);
+            header.appendChild(btn);
+
+            const gridDiv = document.createElement('div');
+            gridDiv.id = 'properties-grid';
+            gridDiv.className = 'ag-theme-alpine';
+            gridDiv.style.height = '600px';
+            gridDiv.style.width = '100%';
+
+            container.appendChild(header);
+            container.appendChild(gridDiv);
+
+            return container;
+        }
+
+        function createFinancialsView() {
+            const div = document.createElement('div');
+            const h2 = document.createElement('h2');
+            h2.textContent = 'Financials';
+            const p = document.createElement('p');
+            p.className = 'text-muted';
+            p.textContent = 'Financial management features coming soon...';
+            div.appendChild(h2);
+            div.appendChild(p);
+            return div;
+        }
+
+        function createPeopleView() {
+            const div = document.createElement('div');
+            const h2 = document.createElement('h2');
+            h2.textContent = 'People';
+            const p = document.createElement('p');
+            p.className = 'text-muted';
+            p.textContent = 'People management features coming soon...';
+            div.appendChild(h2);
+            div.appendChild(p);
+            return div;
+        }
+
+        function createServiceView() {
+            const div = document.createElement('div');
+            const h2 = document.createElement('h2');
+            h2.textContent = 'Service';
+            const p = document.createElement('p');
+            p.className = 'text-muted';
+            p.textContent = 'Service request features coming soon...';
+            div.appendChild(h2);
+            div.appendChild(p);
+            return div;
+        }
+
+        function statusCellRenderer(params) {
+            if (params.value == null) return '';
+            const status = statusMap[params.value] || { text: 'Unknown', class: '' };
+            return `<span class="status-badge ${status.class}">${status.text}</span>`;
+        }
+
+        function actionsCellRenderer(params) {
+            return `
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="editProperty(${params.data.propertyId})">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteProperty(${params.data.propertyId})">
+                    <i class="bi bi-trash"></i>
+                </button>
+            `;
+        }
+
+        function initializeGrid() {
             const columnDefs = [
                 { field: 'propertyId', headerName: 'ID', width: 80, filter: 'agNumberColumnFilter' },
                 { field: 'name', headerName: 'Name', width: 200, filter: 'agTextColumnFilter' },
@@ -145,205 +340,48 @@
                 domLayout: 'normal',
                 rowSelection: 'single',
                 onGridReady: (params) => {
-                    setGridApi(params.api);
-                    loadProperties(params.api);
+                    gridApi = params.api;
+                    loadProperties();
                 }
             };
 
-            const loadProperties = async (api) => {
-                try {
-                    const response = await fetch('/api/properties');
-                    if (!response.ok) throw new Error('Failed to load properties');
-                    const properties = await response.json();
-                    api.setGridOption('rowData', properties);
-                } catch (error) {
-                    console.error('Error loading properties:', error);
-                    alert('Failed to load properties. Please try again.');
+            const gridDiv = document.querySelector('#properties-grid');
+            agGrid.createGrid(gridDiv, gridOptions);
+        }
+
+        async function loadProperties() {
+            try {
+                const response = await fetch('/api/properties');
+                if (!response.ok) throw new Error('Failed to load properties');
+                const properties = await response.json();
+                if (gridApi) {
+                    gridApi.setGridOption('rowData', properties);
                 }
-            };
+            } catch (error) {
+                console.error('Error loading properties:', error);
+                alert('Failed to load properties. Please try again.');
+            }
+        }
 
-            React.useEffect(() => {
-                const gridDiv = document.querySelector('#properties-grid');
-                if (gridDiv && !gridApi) {
-                    agGrid.createGrid(gridDiv, gridOptions);
-                }
-            }, []);
+        function editProperty(id) {
+            alert(`Edit property ${id} - functionality coming soon!`);
+        }
 
-            window.editProperty = (id) => {
-                alert(`Edit property ${id} - functionality coming soon!`);
-            };
+        async function deleteProperty(id) {
+            if (!confirm('Are you sure you want to delete this property?')) return;
+            try {
+                const response = await fetch(`/api/properties/${id}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error('Failed to delete property');
+                loadProperties();
+                alert('Property deleted successfully');
+            } catch (error) {
+                console.error('Error deleting property:', error);
+                alert('Failed to delete property. Please try again.');
+            }
+        }
 
-            window.deleteProperty = async (id) => {
-                if (!confirm('Are you sure you want to delete this property?')) return;
-                try {
-                    const response = await fetch(`/api/properties/${id}`, { method: 'DELETE' });
-                    if (!response.ok) throw new Error('Failed to delete property');
-                    if (gridApi) loadProperties(gridApi);
-                    alert('Property deleted successfully');
-                } catch (error) {
-                    console.error('Error deleting property:', error);
-                    alert('Failed to delete property. Please try again.');
-                }
-            };
-
-            return e('div', null,
-                e('div', { className: 'd-flex justify-content-between align-items-center mb-4' },
-                    e('h2', null, 'Properties'),
-                    e('button', { 
-                        className: 'btn btn-primary',
-                        onClick: () => alert('Add property functionality coming soon!')
-                    },
-                        e('i', { className: 'bi bi-plus-circle me-2' }),
-                        'Add Property'
-                    )
-                ),
-                e('div', { id: 'properties-grid', className: 'ag-theme-alpine', style: { height: '600px', width: '100%' } })
-            );
-        };
-
-        // Dashboard Cards View
-        const DashboardView = ({ onNavigate }) => {
-            const cards = [
-                {
-                    id: 'properties',
-                    title: 'Properties',
-                    icon: 'bi-building',
-                    iconColor: '#0d6efd',
-                    description: 'Manage properties and units'
-                },
-                {
-                    id: 'financials',
-                    title: 'Financials',
-                    icon: 'bi-cash-coin',
-                    iconColor: '#198754',
-                    description: 'Track income and expenses'
-                },
-                {
-                    id: 'people',
-                    title: 'People',
-                    icon: 'bi-people',
-                    iconColor: '#6f42c1',
-                    description: 'Manage tenants and owners'
-                },
-                {
-                    id: 'service',
-                    title: 'Service',
-                    icon: 'bi-tools',
-                    iconColor: '#fd7e14',
-                    description: 'Maintenance and service requests'
-                }
-            ];
-
-            return e('div', { className: 'row g-4' },
-                cards.map(card =>
-                    e('div', { key: card.id, className: 'col-md-6 col-lg-3' },
-                        e('div', { 
-                            className: 'card dashboard-card',
-                            onClick: () => onNavigate(card.id)
-                        },
-                            e('div', { className: 'card-body' },
-                                e('div', { 
-                                    className: 'icon-container',
-                                    style: { color: card.iconColor }
-                                },
-                                    e('i', { className: `bi ${card.icon}` })
-                                ),
-                                e('h3', null, card.title),
-                                e('p', null, card.description)
-                            )
-                        )
-                    )
-                )
-            );
-        };
-
-        // Placeholder views for other sections
-        const FinancialsView = () => {
-            return e('div', null,
-                e('h2', null, 'Financials'),
-                e('p', { className: 'text-muted' }, 'Financial management features coming soon...')
-            );
-        };
-
-        const PeopleView = () => {
-            return e('div', null,
-                e('h2', null, 'People'),
-                e('p', { className: 'text-muted' }, 'People management features coming soon...')
-            );
-        };
-
-        const ServiceView = () => {
-            return e('div', null,
-                e('h2', null, 'Service'),
-                e('p', { className: 'text-muted' }, 'Service request features coming soon...')
-            );
-        };
-
-        // Main App Component
-        const ManagementApp = ({ data }) => {
-            const [currentView, setCurrentView] = useState('dashboard');
-
-            const viewTitles = {
-                dashboard: 'Dashboard',
-                properties: 'Properties',
-                financials: 'Financials',
-                people: 'People',
-                service: 'Service'
-            };
-
-            const renderView = () => {
-                switch (currentView) {
-                    case 'properties':
-                        return e(PropertiesView);
-                    case 'financials':
-                        return e(FinancialsView);
-                    case 'people':
-                        return e(PeopleView);
-                    case 'service':
-                        return e(ServiceView);
-                    default:
-                        return e(DashboardView, { onNavigate: setCurrentView });
-                }
-            };
-
-            return e('div', null,
-                currentView !== 'dashboard' && e('nav', { 'aria-label': 'breadcrumb' },
-                    e('ol', { className: 'breadcrumb' },
-                        e('li', { className: 'breadcrumb-item' },
-                            e('a', { 
-                                href: '#',
-                                onClick: (ev) => { ev.preventDefault(); setCurrentView('dashboard'); }
-                            }, 'Dashboard')
-                        ),
-                        e('li', { className: 'breadcrumb-item active', 'aria-current': 'page' },
-                            viewTitles[currentView]
-                        )
-                    )
-                ),
-                renderView()
-            );
-        };
-
-        const data = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(new
-        {
-            currentUser = Model.CurrentUser != null ? new
-            {
-                id = Model.CurrentUser.ManagementUserId,
-                name = Model.CurrentUser.FullName,
-                email = Model.CurrentUser.Email,
-                managementOrgId = Model.CurrentUser.ManagementOrgId
-            } : null,
-            pendingInvitations = Model.PendingInvitations,
-            recentInvitations = Model.RecentInvitations.Select(inv => new
-            {
-                id = inv.InvitationId,
-                email = inv.Email,
-                role = inv.Role,
-                invitedDate = inv.CreatedAt
-            }).ToList()
-        }));
-
-        const root = ReactDOM.createRoot(document.getElementById('management-dashboard-root'));
-        root.render(e(ManagementApp, { data: data }));
+        document.addEventListener('DOMContentLoaded', () => {
+            renderApp();
+        });
     </script>
 }
